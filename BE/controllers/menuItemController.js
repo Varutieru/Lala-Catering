@@ -1,4 +1,4 @@
-const MenuItem = require('../models/Menu');
+const MenuItem = require('../models/MenuItem');
 const JadwalHarian = require('../models/JadwalHarian');
 
 const getDailyMenu = async (req, res) => {
@@ -29,8 +29,8 @@ const getMenuItems = async (req, res) => {
 
 const createMenuItem = async (req, res) => {
     try {
-        const { nama, deskripsi, harga, kategori, stok } = req.body;
-        const newItem = new MenuItem({ nama, deskripsi, harga, kategori, stok });
+        const { nama, deskripsi, harga, kategori } = req.body;
+        const newItem = new MenuItem({ nama, deskripsi, harga, kategori });
         await newItem.save();
         res.status(201).json(newItem);
     } catch (err) {

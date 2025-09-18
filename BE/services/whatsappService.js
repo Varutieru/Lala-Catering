@@ -1,4 +1,3 @@
-
 const sendWhatsAppMessage = (recipientNumber, message) => {
     if (!recipientNumber || !message) {
         console.error('Nomor telepon atau pesan tidak valid.');

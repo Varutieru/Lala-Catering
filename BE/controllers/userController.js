@@ -1,11 +1,7 @@
-<<<<<<< Updated upstream
+
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
-=======
-const User = require("../models/User");
-const bcrypt = require('bcrypt');
->>>>>>> Stashed changes
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -33,7 +29,6 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-<<<<<<< Updated upstream
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select('+password');
 
@@ -50,33 +45,11 @@ const loginUser = async (req, res) => {
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.json({ token, message: 'Login berhasil!', user: { id: user.id, nama: user.nama, email: user.email, role: user.role } });
-=======
-    const { name, email, phone, password } = req.body;
-
-    if (!name || !email){
-      return res.status(400).json({ error: "Name and email are required" });
-    }
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: "Email is already in use" });
-    }
-
-    // hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const user = new User({ name, email, phone, password: hashedPassword });
-
-    await user.save();
-    res.status(201).json(user);
->>>>>>> Stashed changes
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 };
 
-<<<<<<< Updated upstream
 const googleLogin = async (req, res) => {
   try {
     const { token } = req.body;
@@ -121,45 +94,15 @@ const googleLogin = async (req, res) => {
 };
 
 const getUserProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select('-password');
-    if (!user) {
-      return res.status(404).json({ message: 'User tidak ditemukan.' });
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: 'Pengguna tidak ditemukan.' });
+        }
+        res.json(user);
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
     }
-    res.json(user);
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
 };
 
 module.exports = { registerUser, loginUser, googleLogin, getUserProfile };
-=======
-const loginUser = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    const user = await User.findOne({
-      $or: [
-        { email: email },
-        { name: name }
-      ]
-    });
-    if (!user) {
-      return res.status(400).json({ error: "Invalid email or password" });
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ error: "Password is incorrect" });
-    }
-
-    res.json({ message: "Login successful", user });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
-
-
-module.exports = { getUsers, 
-  createUser, 
-  loginUser 
-};
->>>>>>> Stashed changes
