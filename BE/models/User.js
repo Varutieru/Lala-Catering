@@ -1,12 +1,58 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs'); // Make sure to import bcryptjs
 
 const userSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    phone: { type: String, required: false, unique: true },
-    password: { type: String, required: true },
-    role: { type: String, enum: ['customer', 'admin'], default: 'customer' },
-    createdAt: { type: Date, default: Date.now }
+    nama: { // Changed to nama for consistency
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    password: {
+        type: String,
+        required: true,
+        minlength: 6,
+        select: false 
+    },
+    nomorTelepon: { 
+        type: String,
+    },
+    alamatPengiriman: { 
+        type: String,
+    },
+    loginType: {
+        type: String,
+        enum: ['traditional', 'google'], 
+        required: true
+    },
+    role: {
+        type: String,
+        enum: ['pembeli', 'penjual', 'admin'],
+        default: 'pembeli'
+    }
 });
 
-module.exports = mongoose.model("User", userSchema);
+// Asynchronous middleware for hashing the password before saving
+userSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) {
+        return next();
+    }
+
+    if (this.password) {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+    }
+    
+    next();
+});
+
+// Asynchronous method to compare the entered password with the hashed password
+userSchema.methods.matchPassword = async function(enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+};
+
+const User = mongoose.model('User', userSchema);
+module.exports = User;
