@@ -1,14 +1,34 @@
-const moongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-const menuSchema = new moongoose.Schema({
-    name: { type: String, required: true },
-    price: { type: Number, required: true },
-    description: { type: String, required: false },
-    isActive: { type: Boolean, default: true },
-    schedule: [{
+const menuItemSchema = new mongoose.Schema({
+    nama: {
         type: String,
-        enum: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-    }]
-});
+        required: true
+    },
+    deskripsi: {
+        type: String,
+        required: true
+    },
+    harga: {
+        type: Number,
+        required: true
+    },
+    gambar: {
+        type: String
+    },
+    kategori: {
+        type: String,
+        required: true
+    },
+    isAvailable: {
+        type: Boolean,
+        default: true
+    },
+    stok: {
+        type: Number,
+        default: 0
+    }
+}, { timestamps: true });
 
-module.exports = moongoose.model("Menu", menuSchema);
+const Menu = mongoose.model('Menu', menuItemSchema);
+module.exports = Menu;
