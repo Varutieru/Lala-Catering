@@ -23,3 +23,10 @@
     .vscode/
     .idea/
     *.swp
+
+
+    BE/node_modules/
+    BE/.env
+    BE/npm-debug.log*
+    BE/yarn-debug.log*
+    BE/yarn-error.log*  
