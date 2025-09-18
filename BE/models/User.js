@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs'); // Make sure to import bcryptjs
 
 const userSchema = new mongoose.Schema({
+<<<<<<< Updated upstream
     nama: { // Changed to nama for consistency
         type: String,
         required: true
@@ -48,6 +49,14 @@ userSchema.pre('save', async function(next) {
     
     next();
 });
+=======
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    phone: { type: String, parse: true },
+    password: { type: String, required: true },
+    role: { type: String, enum: ['customer', 'admin'], default: 'customer' }
+}, { timestamps: true });
+>>>>>>> Stashed changes
 
 // Asynchronous method to compare the entered password with the hashed password
 userSchema.methods.matchPassword = async function(enteredPassword) {

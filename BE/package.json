@@ -3,15 +3,23 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+<<<<<<< Updated upstream
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+=======
+    "dev": "nodemon server.js"
+>>>>>>> Stashed changes
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+<<<<<<< Updated upstream
     "bcryptjs": "^3.0.2",
+=======
+    "bcrypt": "^6.0.0",
+>>>>>>> Stashed changes
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
