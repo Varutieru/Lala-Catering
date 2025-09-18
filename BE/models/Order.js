@@ -1,18 +1,58 @@
-const moongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-const orderItemSchema = new moongoose.Schema({
-    menu: { type: moongoose.Schema.Types.ObjectId, ref: 'Menu', required: true },
-    quantity: { type: Number, required: true, min: 1 },
-    price: { type: Number, required: true, min: 0 }
-});
+const orderSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    items: [{
+        menuItemId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'MenuItem',
+            required: true
+        },
+        namaItem: {
+            type: String,
+            required: true
+        },
+        harga: {
+            type: Number,
+            required: true
+        },
+        jumlah: {
+            type: Number,
+            required: true,
+            min: 1
+        }
+    }],
+    totalHarga: {
+        type: Number,
+        required: true
+    },
+    lokasiPengiriman: {
+        lat: {
+            type: Number,
+            required: true
+        },
+        lng: {
+            type: Number,
+            required: true
+        }
+    },
+    tanggalPesanan: {
+        type: Date,
+        default: Date.now
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'diproses', 'dikirim', 'selesai', 'dibatalkan'],
+        default: 'pending'
+    },
+    midtransTransactionId: {
+        type: String
+    }
+}, { timestamps: true });
 
-const orderSchema = new moongoose.Schema({
-    userId: { type: moongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    orderDate: { type: Date, default: Date.now },
-    deliverDate: { type: Date, required: true },
-    items: [orderItemSchema],
-    totalPrice: { type: Number, required: true, min: 0 },
-    status: { type: String, enum: ['pending', 'completed', 'canceled'], default: 'pending' }
-});
-
-module.exports = moongoose.model("Order", orderSchema);
+const Order = mongoose.model('Order', orderSchema);
+module.exports = Order;
