@@ -1,5 +1,5 @@
 const Order = require('../models/Order');
-const MenuItem = require('../models/MenuItem');
+const MenuItem = require('../models/Menu');
 const User = require('../models/User');
 const { sendWhatsAppMessage } = require('../services/whatsappService');
 const midtransClient = require('midtrans-client');
@@ -82,7 +82,7 @@ const updateOrderStatus = async (req, res) => {
             } else if (newStatus === 'selesai') {
                 message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah selesai. Terima kasih!`;
             } else if (newStatus === 'dibatalkan') {
-                 message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah dibatalkan. Mohon maaf atas ketidaknyamanan ini.`;
+                message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah dibatalkan. Mohon maaf atas ketidaknyamanan ini.`;
             }
 
             if (message) {

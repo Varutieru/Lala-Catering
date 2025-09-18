@@ -6,7 +6,7 @@ dotenv.config();
 
 const userRoutes = require("./routes/userRoutes");
 const orderRoutes = require("./routes/orderRoutes");
-const menuRoutes = require("./routes/menuItemRoutes");
+const menuRoutes = require("./routes/menuRoutes");
 // const notificationRoutes = require("./routes/notificationRoutes");
 const jadwalRoutes = require("./routes/jadwalRoutes");
 
