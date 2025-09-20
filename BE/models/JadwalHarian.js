@@ -14,6 +14,14 @@ const jadwalHarianSchema = new mongoose.Schema({
         type: String,
         enum: ['buka', 'tutup'],
         default: 'buka'
+    },
+    jamBuka: {
+        type: String,
+        default: '08:00'
+    },
+    jamTutup: {
+        type: String,
+        default: '22:00'
     }
 });
 
