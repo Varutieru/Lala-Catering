@@ -1,31 +1,33 @@
 const mongoose = require('mongoose');
 
+const orderItemSchema = new mongoose.Schema({
+    menuItemId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'MenuItem',
+        required: true
+    },
+    namaItem: {
+        type: String,
+        required: true
+    },
+    harga: {
+        type: Number,
+        required: true
+    },
+    jumlah: {
+        type: Number,
+        required: true,
+        min: 1
+    }
+});
+
 const orderSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    items: [{
-        menuItemId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'MenuItem',
-            required: true
-        },
-        namaItem: {
-            type: String,
-            required: true
-        },
-        harga: {
-            type: Number,
-            required: true
-        },
-        jumlah: {
-            type: Number,
-            required: true,
-            min: 1
-        }
-    }],
+    items: [orderItemSchema],
     totalHarga: {
         type: Number,
         required: true

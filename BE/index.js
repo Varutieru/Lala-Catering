@@ -7,7 +7,7 @@ dotenv.config();
 const userRoutes = require("./routes/userRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const menuRoutes = require("./routes/menuItemRoutes");
-// const notificationRoutes = require("./routes/notificationRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 const jadwalRoutes = require("./routes/jadwalRoutes");
 
 const app = express();
@@ -23,7 +23,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/menu", menuRoutes);
-// app.use("/api/notifications", notificationRoutes);
+app.use("/api/notifications", notificationRoutes);
 app.use("/api/jadwal", jadwalRoutes);
 
 const PORT = process.env.PORT || 3000;

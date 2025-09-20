@@ -1,15 +1,39 @@
-const sendWhatsAppMessage = (recipientNumber, message) => {
-    if (!recipientNumber || !message) {
-        console.error('Nomor telepon atau pesan tidak valid.');
-        return Promise.reject(new Error('Nomor telepon atau pesan tidak valid.'));
-    }
-//Masih simulasi, belum terkoneksi ke API WhatsApp
-    console.log('--- SIMULASI PENGIRIMAN PESAN WHATSAPP ---');
-    console.log(`Kepada: ${recipientNumber}`);
-    console.log(`Pesan: ${message}`);
-    console.log('-------------------------------------------');
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
 
-    return Promise.resolve({ status: 'sent' });
+const client = new Client({
+    authStrategy: new LocalAuth()
+});
+
+client.on('qr', (qr) => {
+    console.log('WA Client QR Code:');
+    qrcode.generate(qr, { small: true });
+});
+
+client.on('ready', () => {
+    console.log('WhatsApp client is ready!');
+});
+
+client.on('auth_failure', (msg) => {
+    console.error('Authentication failure:', msg);
+});
+
+client.on('disconnected', (reason) => {
+    console.log('Client was disconnected:', reason);
+});
+
+client.initialize();
+
+const sendWhatsAppMessage = async (recipientNumber, message) => {
+    try {
+        const number = recipientNumber.includes('@c.us') ? recipientNumber : `${recipientNumber.replace(/\D/g, '')}@c.us`;
+        const result = await client.sendMessage(number, message);
+        console.log('Pesan WA berhasil dikirim!');
+        return result;
+    } catch (error) {
+        console.error('Gagal mengirim pesan WhatsApp:', error);
+        return null;
+    }
 };
 
-module.exports = { sendWhatsAppMessage };
+module.exports = { sendWhatsAppMessage, client };
