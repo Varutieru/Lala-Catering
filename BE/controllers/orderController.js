@@ -1,5 +1,5 @@
 const Order = require('../models/Order');
-const MenuItem = require('../models/Menu');
+const MenuItem = require('../models/MenuItem');
 const User = require('../models/User');
 const { sendEmail } = require('../services/emailService');
 const midtransClient = require('midtrans-client');
@@ -18,7 +18,7 @@ const createOrder = async (req, res) => {
 
         for (const item of items) {
             const menuItem = await MenuItem.findById(item.menuItemId);
-            if (!menuItem || !menuItem.isAvailable) {
+            if (!menuItem || menuItem.stok < item.jumlah) {
                 return res.status(404).json({ message: `Item menu '${item.menuItemId}' tidak tersedia.` });
             }
             totalHarga += menuItem.harga * item.jumlah;
