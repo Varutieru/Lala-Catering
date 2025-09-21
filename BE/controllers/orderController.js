@@ -35,6 +35,7 @@ const createOrder = async (req, res) => {
             items: orderedItems,
             totalHarga,
             lokasiPengiriman,
+            alamatPengirimanText
         });
         await newOrder.save();
 
@@ -83,7 +84,7 @@ const updateOrderStatus = async (req, res) => {
             } else if (newStatus === 'selesai') {
                 message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah selesai. Terima kasih!`;
             } else if (newStatus === 'dibatalkan') {
-                 message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah dibatalkan. Mohon maaf atas ketidaknyamanan ini.`;
+                message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah dibatalkan. Mohon maaf atas ketidaknyamanan ini.`;
             }
 
             if (message) {
@@ -193,9 +194,11 @@ const generateInvoice = async (req, res) => {
             }
         };
 
-        pdf.create(invoiceHtml, options).toFile(`./invoices/invoice_${order._id}.pdf`, (err, result) => {
+        pdf.create(invoiceHtml, options).toBuffer((err, buffer) => {
             if (err) return res.status(500).json({ message: err.message });
-            res.download(result.filename);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=invoice_${order._id}.pdf`);
+            res.send(buffer);
         });
 
     } catch (err) {

@@ -9,17 +9,18 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script type="text/javascript"
         src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key="[YOUR_MIDTRANS_CLIENT_KEY]"></script>
+        data-client-key="Mid-server-aZA6ff-7dD3HB_J1ZfyXKqe7"></script>
 
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
         .container { max-width: 800px; margin: auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         .section { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
-        button, input[type="submit"] { padding: 8px 12px; cursor: pointer; border: none; border-radius: 4px; background-color: #007BFF; color: white; }
-        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        button, input[type="submit"] { padding: 8px 12px; cursor: pointer; border: none; border-radius: 4px; background-color: #007BFF; color: white; margin-bottom: 5px; }
+        button:disabled, input[type="submit"]:disabled { background-color: #ccc; cursor: not-allowed; }
         input[type="text"], input[type="number"], input[type="email"], input[type="password"] { width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 10px; }
         .menu-item-list div { margin-bottom: 5px; }
         .flex-container { display: flex; justify-content: space-between; align-items: center; }
+        hr { border: 0; height: 1px; background: #ccc; margin: 20px 0; }
     </style>
 </head>
 <body>
@@ -48,6 +49,8 @@
                 <input type="email" id="registerEmail" placeholder="Email" required>
                 <input type="password" id="registerPassword" placeholder="Password" required>
                 <input type="text" id="registerRole" placeholder="Role (pembeli/penjual)" value="pembeli" required>
+                <input type="text" id="registerPhone" placeholder="Nomor Telepon" required>
+                <input type="text" id="registerAddress" placeholder="Alamat Pengiriman" required>
                 <button type="submit">Registrasi</button>
             </form>
             <br>
@@ -82,6 +85,29 @@
             <div id="orderStatus"></div>
         </div>
 
+        <div class="section">
+            <h3>4. Cek Pesanan & Cetak Invoice</h3>
+            <form id="checkOrderForm">
+                <input type="text" id="orderIdCheck" placeholder="ID Pesanan" required>
+                <button type="submit">Lihat Pesanan</button>
+            </form>
+            <br>
+            <h4>Update Status Pesanan</h4>
+            <form id="updateStatusForm">
+                <input type="text" id="orderIdUpdate" placeholder="ID Pesanan" required>
+                <select id="newStatus">
+                    <option value="diproses">Diproses</option>
+                    <option value="dikirim">Dikirim</option>
+                    <option value="selesai">Selesai</option>
+                    <option value="dibatalkan">Dibatalkan</option>
+                </select>
+                <button type="submit">Update Status</button>
+            </form>
+            <br>
+            <button onclick="generateInvoice()">Cetak Invoice</button>
+            <p id="orderDetail"></p>
+        </div>
+
     </div>
 
     <script>
@@ -111,9 +137,9 @@
             }
         }
 
-        async function registerUser(name, email, password, role) {
+        async function registerUser(name, email, password, role, phone, address) {
             try {
-                await axios.post(`${backendUrl}/users/register`, { nama: name, email: email, password: password, role: role });
+                const res = await axios.post(`${backendUrl}/users/register`, { nama: name, email: email, password: password, role: role, nomorTelepon: phone, alamatPengiriman: address });
                 alert('Registrasi Berhasil! Silakan login.');
                 document.getElementById('registrationForm').reset();
             } catch (error) {
@@ -137,13 +163,22 @@
             loginUser(email, password);
         });
 
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const name = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
             const role = document.getElementById('registerRole').value;
-            registerUser(name, email, password, role);
+            const phone = document.getElementById('registerPhone').value;
+            const address = document.getElementById('registerAddress').value;
+            
+            try {
+                await axios.post(`${backendUrl}/users/register`, { nama: name, email: email, password: password, role: role, nomorTelepon: phone, alamatPengiriman: address });
+                alert('Registrasi Berhasil! Silakan login.');
+                document.getElementById('registrationForm').reset();
+            } catch (error) {
+                alert('Registrasi Gagal: ' + (error.response?.data?.message || error.message));
+            }
         });
 
         // --- Menu & Schedule Functions ---
@@ -205,7 +240,7 @@
             }
 
             try {
-                await axios.post(`${backendUrl}/jadwal`, weeklySchedule, {
+                await axios.post(`${backendUrl}/jadwal/weekly`, weeklySchedule, {
                     headers: { 'x-auth-token': appToken }
                 });
                 alert('Jadwal mingguan berhasil diatur!');
@@ -262,6 +297,53 @@
             } catch (error) {
                 alert('Pembayaran Gagal: ' + (error.response?.data?.message || error.message));
             }
+        }
+
+        // --- Order Status & Invoice Functions ---
+        document.getElementById('checkOrderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const orderId = document.getElementById('orderIdCheck').value;
+            try {
+                const res = await axios.get(`${backendUrl}/orders/${orderId}`, {
+                    headers: { 'x-auth-token': appToken }
+                });
+                const order = res.data;
+                document.getElementById('orderDetail').innerHTML = `
+                    <p><strong>Status:</strong> ${order.status}</p>
+                    <p><strong>Total:</strong> Rp${order.totalHarga}</p>
+                    <p><strong>Pelanggan:</strong> ${order.userId.nama}</p>
+                `;
+            } catch (error) {
+                alert('Gagal mengambil pesanan: ' + (error.response?.data?.message || error.message));
+            }
+        });
+
+        document.getElementById('updateStatusForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (userRole !== 'penjual' && userRole !== 'pengantar') {
+                alert('Anda tidak memiliki izin.');
+                return;
+            }
+            const orderId = document.getElementById('orderIdUpdate').value;
+            const newStatus = document.getElementById('newStatus').value;
+            try {
+                await axios.put(`${backendUrl}/orders/${orderId}/status`, { newStatus }, {
+                    headers: { 'x-auth-token': appToken }
+                });
+                alert(`Status pesanan berhasil diupdate menjadi ${newStatus}!`);
+            } catch (error) {
+                alert('Gagal update status: ' + (error.response?.data?.message || error.message));
+            }
+        });
+        
+        async function generateInvoice() {
+            const orderId = document.getElementById('orderIdCheck').value;
+            if (!orderId) {
+                alert('Masukkan ID pesanan untuk dicetak.');
+                return;
+            }
+            const invoiceUrl = `${backendUrl}/orders/${orderId}/invoice`;
+            window.open(invoiceUrl, '_blank');
         }
     </script>
 </body>
