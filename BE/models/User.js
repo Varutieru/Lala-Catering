@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs'); // Make sure to import bcryptjs
 
 const userSchema = new mongoose.Schema({
+
     nama: { // Changed to nama for consistency
         type: String,
         required: true
@@ -9,7 +10,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
+        unique: true
     },
     password: {
         type: String,
@@ -19,6 +20,7 @@ const userSchema = new mongoose.Schema({
     },
     nomorTelepon: { 
         type: String,
+        required: true
     },
     alamatPengiriman: { 
         type: String,
@@ -30,10 +32,10 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['pembeli', 'penjual', 'admin'],
+        enum: ['pembeli', 'penjual', 'pengantar'],
         default: 'pembeli'
     }
-});
+}, { timestamps: true });
 
 // Asynchronous middleware for hashing the password before saving
 userSchema.pre('save', async function(next) {
