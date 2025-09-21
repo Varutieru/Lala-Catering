@@ -9,6 +9,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const menuRoutes = require("./routes/menuRoutes");
 // const notificationRoutes = require("./routes/notificationRoutes");
 const jadwalRoutes = require("./routes/jadwalRoutes");
+// const faqRoutes = require("./routes/faqRoutes");
 
 const app = express();
 app.use(cors());
@@ -23,8 +24,9 @@ mongoose.connect(process.env.MONGO_URI)
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/menu", menuRoutes);
-// app.use("/api/notifications", notificationRoutes);
+//
 app.use("/api/jadwal", jadwalRoutes);
+//app.use("/api/faq", faqRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

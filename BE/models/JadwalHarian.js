@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const jadwalHarianSchema = new mongoose.Schema({
-    tanggal: {
-        type: Date,
+    hari:{
+        hari : ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'],
+        type: String,
         required: true,
-        unique: true
     },
     menuTersedia: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -14,6 +14,14 @@ const jadwalHarianSchema = new mongoose.Schema({
         type: String,
         enum: ['buka', 'tutup'],
         default: 'buka'
+    },
+    jamBuka: {
+        type: String,
+        default: '08:00'
+    },
+    jamTutup: {
+        type: String,
+        default: '22:00'
     }
 });
 

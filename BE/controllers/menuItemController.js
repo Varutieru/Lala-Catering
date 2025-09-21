@@ -1,22 +1,4 @@
 const MenuItem = require('../models/MenuItem');
-const JadwalHarian = require('../models/JadwalHarian');
-
-const getDailyMenu = async (req, res) => {
-    try {
-        const tanggal = req.query.tanggal ? new Date(req.query.tanggal) : new Date();
-        tanggal.setHours(0, 0, 0, 0);
-
-        const jadwal = await JadwalHarian.findOne({ tanggal }).populate('menuTersedia');
-
-        if (!jadwal) {
-            return res.status(404).json({ message: 'Jadwal tidak ditemukan.' });
-        }
-
-        res.status(200).json(jadwal.menuTersedia);
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
 
 const getMenuItems = async (req, res) => {
     try {
@@ -41,4 +23,4 @@ const createMenuItem = async (req, res) => {
     }
 };
 
-module.exports = { getMenuItems, createMenuItem, getDailyMenu };
+module.exports = { getMenuItems, createMenuItem};

@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
+        unique: true
     },
     password: {
         type: String,
@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
     },
     nomorTelepon: { 
         type: String,
+        required: true
     },
     alamatPengiriman: { 
         type: String,
@@ -31,7 +32,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['pembeli', 'penjual', 'admin'],
+        enum: ['pembeli', 'penjual', 'pengantar'],
         default: 'pembeli'
     }
 }, { timestamps: true });
