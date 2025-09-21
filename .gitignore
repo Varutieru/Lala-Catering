@@ -1,11 +1,8 @@
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-    # Node.js dependencies
-    node_modules/
-=======
+
 # Node.js dependencies
 node_modules/
->>>>>>> main
+
+
 
 # Environment variables
 .env
@@ -25,16 +22,12 @@ dist/
 build/
 .cache/
 
-<<<<<<< HEAD
-    # IDE / Editor settings
-    .vscode/
-    .idea/
-    *.swp
-
-
-    BE/node_modules/
-    BE/.env
-    BE/npm-debug.log*
-    BE/yarn-debug.log*
-    BE/yarn-error.log*  
-
+# IDE / Editor settings
+.vscode/
+.idea/
+*.swp
+BE/node_modules/
+BE/.env
+BE/npm-debug.log*
+BE/yarn-debug.log*
+BE/yarn-error.log*
