@@ -1,11 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const { getMenuItems, createMenuItem} = require('../controllers/menuItemController');
+const { getMenuItems, createMenuItem, upload, updateMenuItem, deleteMenuItem } = require('../controllers/menuItemController');
 const authMiddleware = require('../middleware/auth');
 const { getDailyMenu } = require('../controllers/jadwalController');
 
 router.get('/', getMenuItems);
 router.post('/', authMiddleware(['penjual']), createMenuItem);
 router.get('/daily', getDailyMenu);  
+
+// Ambil semua menu
+router.get('/', getMenuItems);                      // GET /api/menu
+// Tambah menu baru dengan upload gambar
+// field form-data: nama, deskripsi, harga, stok, gambar (type file)
+router.post(                                        // POST /api/menu
+  '/',
+  authMiddleware(['penjual']),
+  upload.single('gambar'),
+  createMenuItem
+);
+
+router.put('/:id', authMiddleware(['penjual']), upload.single('gambar'), updateMenuItem);   // PUT /api/menu/:id
+router.delete('/:id', authMiddleware(['penjual']), deleteMenuItem);             // DELETE /api/menu/:id
 
 module.exports = router;

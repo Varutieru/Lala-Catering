@@ -48,7 +48,7 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'diproses', 'dikirim', 'selesai', 'dibatalkan'],
+        enum: ['pending', 'confirmed', 'canceled', 'paid', 'completed'],
         default: 'pending'
     },
     midtransTransactionId: {

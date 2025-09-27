@@ -66,7 +66,7 @@ const updateOrderStatus = async (req, res) => {
 
         if (!order) return res.status(404).json({ message: 'Pesanan tidak ditemukan.' });
 
-        const validStatuses = ['pending', 'diproses', 'dikirim', 'selesai', 'dibatalkan'];
+        const validStatuses = ['pending', 'confirmed', 'canceled', 'paid', 'completed'];
         if (!validStatuses.includes(newStatus)) {
             return res.status(400).json({ message: 'Status tidak valid.' });
         }
@@ -77,13 +77,13 @@ const updateOrderStatus = async (req, res) => {
         const user = order.userId;
         if (user && user.email) {
             let message = '';
-            if (newStatus === 'diproses') {
-                message = `Halo ${user.nama}, pesanan Anda (${order._id}) sedang diproses.`;
-            } else if (newStatus === 'dikirim') {
-                message = `Halo ${user.nama}, pesanan Anda (${order._id}) sedang dalam pengiriman.`;
-            } else if (newStatus === 'selesai') {
+            if (newStatus === 'confirmed') {
+                message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah dikonfirmasi.`;
+            } else if (newStatus === 'paid') {
+                message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah dibayar.`;
+            } else if (newStatus === 'completed') {
                 message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah selesai. Terima kasih!`;
-            } else if (newStatus === 'dibatalkan') {
+            } else if (newStatus === 'canceled') {
                 message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah dibatalkan. Mohon maaf atas ketidaknyamanan ini.`;
             }
 

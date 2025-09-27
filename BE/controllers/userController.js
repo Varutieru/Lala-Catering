@@ -105,4 +105,23 @@ const getUserProfile = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser, googleLogin, getUserProfile };
+const updateUserProfile = async (req, res) => {
+    try {
+        const { nama, nomorTelepon, alamatPengiriman } = req.body;
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: 'Pengguna tidak ditemukan.' });
+        }
+
+        user.nama = nama || user.nama;
+        user.nomorTelepon = nomorTelepon || user.nomorTelepon;
+        user.alamatPengiriman = alamatPengiriman || user.alamatPengiriman;
+
+        await user.save();
+        res.json({ message: 'Profil berhasil diperbarui.', user });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
+module.exports = { registerUser, loginUser, googleLogin, getUserProfile, updateUserProfile };
