@@ -12,7 +12,7 @@ const snap = new midtransClient.Snap({
 
 const createOrder = async (req, res) => {
     try {
-        const { items, lokasiPengiriman } = req.body;
+        const { items, lokasiPengiriman, alamatPengirimanText } = req.body;
         let totalHarga = 0;
         const orderedItems = [];
 
@@ -206,4 +206,13 @@ const generateInvoice = async (req, res) => {
     }
 };
 
-module.exports = { createOrder, getOrders, updateOrderStatus, checkout, handleMidtransCallback, generateInvoice };
+const myOrders = async (req, res) => {
+    try {
+        const orders = await Order.find({ userId: req.user.id }).populate('items.menuItemId', 'nama harga');
+        res.json(orders);
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
+module.exports = { createOrder, getOrders, updateOrderStatus, checkout, handleMidtransCallback, generateInvoice, myOrders };

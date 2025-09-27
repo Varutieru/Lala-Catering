@@ -16,18 +16,7 @@ const menuItemSchema = new mongoose.Schema({
     gambar: {
         type: String
     },
-<<<<<<< HEAD
-=======
-    kategori: {
-        type: String,
-        enum: ['makanan', 'minuman', 'cemilan'],
-        required: true
-    },
-    isAvailable: {
-        type: Boolean,
-        default: true
-    },
->>>>>>> e5ee02d2db43f59ca5ccbe80ff50e0fadfde52be
+
     stok: {
         type: Number,
         default: 0
