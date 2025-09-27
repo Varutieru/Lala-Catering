@@ -16,6 +16,7 @@ const menuItemSchema = new mongoose.Schema({
     gambar: {
         type: String
     },
+
     stok: {
         type: Number,
         default: 0
