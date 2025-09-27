@@ -1,8 +1,11 @@
 # Node.js dependencies
 ./BE/node_modules/
+node_modules/
 
 # Environment variables
 .env
+
+
 
 # Log files
 npm-debug.log*
