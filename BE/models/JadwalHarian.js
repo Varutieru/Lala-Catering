@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 
 const jadwalHarianSchema = new mongoose.Schema({
-    hari:{
-        hari : ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'],
+    hari: {
         type: String,
+        enum: ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'],
         required: true,
+        unique: true // supaya tiap hari hanya ada satu dokumen
     },
     menuTersedia: [{
         type: mongoose.Schema.Types.ObjectId,

@@ -1,8 +1,18 @@
 const MenuItem = require('../models/MenuItem');
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const upload = multer({ dest: 'uploads/' });
 
 const getMenuItems = async (req, res) => {
     try {
-        const menuItems = await MenuItem.find({ isAvailable: true });
+        const menuItems = await MenuItem.find();
         res.json(menuItems);
     } catch (err) {
         return res.status(500).json({ message: err.message });
@@ -11,8 +21,13 @@ const getMenuItems = async (req, res) => {
 
 const createMenuItem = async (req, res) => {
     try {
-        const { nama, deskripsi, harga, kategori } = req.body;
-        const newItem = new MenuItem({ nama, deskripsi, harga, kategori });
+        const { nama, deskripsi, harga, stok } = req.body;
+        let gambar = null;
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path);
+            gambar = result.secure_url;
+        }
+        const newItem = new MenuItem({ nama, deskripsi, harga, gambar, stok });
         await newItem.save();
         res.status(201).json(newItem);
     } catch (err) {
@@ -61,3 +76,4 @@ const updateMenuItem = async (req, res) => {
 };
 
 module.exports = { getMenuItems, createMenuItem, upload, updateMenuItem, deleteMenuItem };
+

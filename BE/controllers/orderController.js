@@ -1,5 +1,5 @@
 const Order = require('../models/Order');
-const MenuItem = require('../models/Menu');
+const MenuItem = require('../models/MenuItem');
 const User = require('../models/User');
 const { sendEmail } = require('../services/emailService');
 const midtransClient = require('midtrans-client');
@@ -12,13 +12,13 @@ const snap = new midtransClient.Snap({
 
 const createOrder = async (req, res) => {
     try {
-        const { items, lokasiPengiriman } = req.body;
+        const { items, lokasiPengiriman, alamatPengirimanText } = req.body;
         let totalHarga = 0;
         const orderedItems = [];
 
         for (const item of items) {
             const menuItem = await MenuItem.findById(item.menuItemId);
-            if (!menuItem || !menuItem.isAvailable) {
+            if (!menuItem || menuItem.stok < item.jumlah) {
                 return res.status(404).json({ message: `Item menu '${item.menuItemId}' tidak tersedia.` });
             }
             totalHarga += menuItem.harga * item.jumlah;
@@ -206,4 +206,13 @@ const generateInvoice = async (req, res) => {
     }
 };
 
-module.exports = { createOrder, getOrders, updateOrderStatus, checkout, handleMidtransCallback, generateInvoice };
+const myOrders = async (req, res) => {
+    try {
+        const orders = await Order.find({ userId: req.user.id }).populate('items.menuItemId', 'nama harga');
+        res.json(orders);
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
+module.exports = { createOrder, getOrders, updateOrderStatus, checkout, handleMidtransCallback, generateInvoice, myOrders };
