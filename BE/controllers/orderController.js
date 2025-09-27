@@ -1,5 +1,5 @@
 const Order = require('../models/Order');
-const MenuItem = require('../models/Menu');
+const MenuItem = require('../models/MenuItem');
 const User = require('../models/User');
 const { sendWhatsAppMessage } = require('../services/whatsappService');
 const midtransClient = require('midtrans-client');
@@ -11,13 +11,13 @@ const snap = new midtransClient.Snap({
 
 const createOrder = async (req, res) => {
     try {
-        const { items, lokasiPengiriman } = req.body;
+        const { items, lokasiPengiriman, alamatPengirimanText } = req.body;
         let totalHarga = 0;
         const orderedItems = [];
 
         for (const item of items) {
             const menuItem = await MenuItem.findById(item.menuItemId);
-            if (!menuItem || !menuItem.isAvailable) {
+            if (!menuItem || menuItem.stok < item.jumlah) {
                 return res.status(404).json({ message: `Item menu '${item.menuItemId}' tidak tersedia.` });
             }
             totalHarga += menuItem.harga * item.jumlah;
@@ -147,4 +147,70 @@ const handleMidtransCallback = async (req, res) => {
     res.status(200).send('OK');
 };
 
-module.exports = { createOrder, getOrders, updateOrderStatus, checkout, handleMidtransCallback };
+const generateInvoice = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const order = await Order.findById(id).populate('userId', 'nama email alamatPengiriman').populate('items.menuItemId', 'nama harga');
+
+        if (!order) {
+            return res.status(404).json({ message: 'Pesanan tidak ditemukan.' });
+        }
+
+        const invoiceHtml = `
+            <h1>Invoice Pesanan</h1>
+            <p>Nomor Pesanan: ${order._id}</p>
+            <p>Nama Pelanggan: ${order.userId.nama}</p>
+            <p>Alamat Pengiriman: ${order.userId.alamatPengiriman}</p>
+            <p>Tanggal Pesanan: ${new Date(order.tanggalPesanan).toLocaleDateString()}</p>
+            <h2>Rincian Pesanan:</h2>
+            <table border="1" cellpadding="5" cellspacing="0">
+                <tr>
+                    <th>Nama Item</th>
+                    <th>Harga</th>
+                    <th>Jumlah</th>
+                    <th>Total</th>
+                </tr>
+                ${order.items.map(item => `
+                    <tr>
+                        <td>${item.namaItem}</td>
+                        <td>${item.harga}</td>
+                        <td>${item.jumlah}</td>
+                        <td>${item.harga * item.jumlah}</td>
+                    </tr>
+                `).join('')}
+            </table>
+        `;
+
+        const options = {
+            format: 'A4',
+            orientation: 'portrait',
+            border: {
+                top: '1in',
+                right: '1in',
+                bottom: '1in',
+                left: '1in'
+            }
+        };
+
+        pdf.create(invoiceHtml, options).toBuffer((err, buffer) => {
+            if (err) return res.status(500).json({ message: err.message });
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=invoice_${order._id}.pdf`);
+            res.send(buffer);
+        });
+
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
+const myOrders = async (req, res) => {
+    try {
+        const orders = await Order.find({ userId: req.user.id }).populate('items.menuItemId', 'nama harga');
+        res.json(orders);
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
+module.exports = { createOrder, getOrders, updateOrderStatus, checkout, handleMidtransCallback, generateInvoice, myOrders };

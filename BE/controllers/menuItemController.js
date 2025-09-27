@@ -1,22 +1,14 @@
 const MenuItem = require('../models/MenuItem');
-const JadwalHarian = require('../models/JadwalHarian');
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
 
-const getDailyMenu = async (req, res) => {
-    try {
-        const tanggal = req.query.tanggal ? new Date(req.query.tanggal) : new Date();
-        tanggal.setHours(0, 0, 0, 0);
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-        const jadwal = await JadwalHarian.findOne({ tanggal }).populate('menuTersedia');
-
-        if (!jadwal) {
-            return res.status(404).json({ message: 'Jadwal tidak ditemukan.' });
-        }
-
-        res.status(200).json(jadwal.menuTersedia);
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-};
+const upload = multer({ dest: 'uploads/' });
 
 const getMenuItems = async (req, res) => {
     try {
@@ -29,8 +21,13 @@ const getMenuItems = async (req, res) => {
 
 const createMenuItem = async (req, res) => {
     try {
-        const { nama, deskripsi, harga, kategori } = req.body;
-        const newItem = new MenuItem({ nama, deskripsi, harga, kategori });
+        const { nama, deskripsi, harga, kategori, stok } = req.body;
+        let gambar = null;
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path);
+            gambar = result.secure_url;
+        }
+        const newItem = new MenuItem({ nama, deskripsi, harga, kategori, gambar, stok });
         await newItem.save();
         res.status(201).json(newItem);
     } catch (err) {
@@ -41,4 +38,4 @@ const createMenuItem = async (req, res) => {
     }
 };
 
-module.exports = { getMenuItems, createMenuItem, getDailyMenu };
+module.exports = { getMenuItems, createMenuItem, upload };

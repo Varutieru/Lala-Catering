@@ -16,13 +16,9 @@ const menuItemSchema = new mongoose.Schema({
     gambar: {
         type: String
     },
-    kategori: {
-        type: String,
-        required: true
-    },
-    isAvailable: {
-        type: Boolean,
-        default: true
+    stok: {
+        type: Number,
+        default: 0
     }
 });
 

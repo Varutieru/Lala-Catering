@@ -33,12 +33,12 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (!user || user.loginType !== 'traditional') {
-      return res.status(401).json({ message: 'Email atau password salah.' });
+      return res.status(401).json({ message: 'Email salah.' });
     }
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Email atau password salah.' });
+      return res.status(401).json({ message: 'Password salah.' });
     }
 
     const payload = { user: { id: user.id, role: user.role } };
