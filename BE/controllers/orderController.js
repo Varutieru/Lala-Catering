@@ -1,8 +1,9 @@
 const Order = require('../models/Order');
 const MenuItem = require('../models/MenuItem');
 const User = require('../models/User');
-const { sendWhatsAppMessage } = require('../services/whatsappService');
+const { sendEmail } = require('../services/emailService');
 const midtransClient = require('midtrans-client');
+const pdf = require('html-pdf');
 
 const snap = new midtransClient.Snap({
     isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
@@ -34,12 +35,13 @@ const createOrder = async (req, res) => {
             items: orderedItems,
             totalHarga,
             lokasiPengiriman,
+            alamatPengirimanText
         });
         await newOrder.save();
 
         const user = await User.findById(req.user.id);
-        if (user && user.nomorTelepon) {
-            sendWhatsAppMessage(user.nomorTelepon, `Halo, pesanan Anda (${newOrder._id}) berhasil dibuat. Kami akan segera memprosesnya.`);
+        if (user && user.email) {
+            sendEmail(user.email, 'Konfirmasi Pesanan', `Halo ${user.nama}, pesanan Anda dengan ID ${newOrder._id} telah diterima dan sedang diproses.`);
         }
 
         res.status(201).json(newOrder);
@@ -73,7 +75,7 @@ const updateOrderStatus = async (req, res) => {
         await order.save();
 
         const user = order.userId;
-        if (user && user.nomorTelepon) {
+        if (user && user.email) {
             let message = '';
             if (newStatus === 'diproses') {
                 message = `Halo ${user.nama}, pesanan Anda (${order._id}) sedang diproses.`;
@@ -86,7 +88,7 @@ const updateOrderStatus = async (req, res) => {
             }
 
             if (message) {
-                sendWhatsAppMessage(user.nomorTelepon, message);
+                sendEmail(user.email, 'Update Status Pesanan', message);
             }
         }
 

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halaman Uji Coba Backend Lengkap</title>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="text/javascript"
+        src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="Mid-server-aZA6ff-7dD3HB_J1ZfyXKqe7"></script>
+
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
+        .container { max-width: 800px; margin: auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .section { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        button, input[type="submit"] { padding: 8px 12px; cursor: pointer; border: none; border-radius: 4px; background-color: #007BFF; color: white; margin-bottom: 5px; }
+        button:disabled, input[type="submit"]:disabled { background-color: #ccc; cursor: not-allowed; }
+        input[type="text"], input[type="number"], input[type="email"], input[type="password"] { width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 10px; }
+        .menu-item-list div { margin-bottom: 5px; }
+        .flex-container { display: flex; justify-content: space-between; align-items: center; }
+        hr { border: 0; height: 1px; background: #ccc; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Backend Testing Hub</h1>
+        <p>Halaman ini menguji seluruh fungsionalitas backend katering.</p>
+
+        <div class="section">
+            <h3>Status Aplikasi</h3>
+            <p>Role: <span id="userRole">Guest</span> | Token: <span id="appTokenDisplay">N/A</span></p>
+        </div>
+
+        <div class="section">
+            <h3>1. Otentikasi</h3>
+            <h4>Login Tradisional</h4>
+            <form id="traditionalLoginForm">
+                <input type="email" id="loginEmail" placeholder="Email" value="penjual@example.com" required>
+                <input type="password" id="loginPassword" placeholder="Password" value="penjual_pass" required>
+                <button type="submit">Login</button>
+            </form>
+            <br>
+            <h4>Registrasi Pengguna</h4>
+            <form id="registrationForm">
+                <input type="text" id="registerName" placeholder="Nama" required>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="password" id="registerPassword" placeholder="Password" required>
+                <input type="text" id="registerRole" placeholder="Role (pembeli/penjual)" value="pembeli" required>
+                <input type="text" id="registerPhone" placeholder="Nomor Telepon" required>
+                <input type="text" id="registerAddress" placeholder="Alamat Pengiriman" required>
+                <button type="submit">Registrasi</button>
+            </form>
+            <br>
+            <h4>Login Google</h4>
+            <div id="g_id_onload" data-client_id="[YOUR_GOOGLE_CLIENT_ID]" data-callback="handleCredentialResponse"></div>
+            <div class="g_id_signin" data-type="standard"></div>
+            <p id="loginStatus"></p>
+        </div>
+
+        <div class="section">
+            <h3>2. Manajemen Menu & Jadwal (Penjual Only)</h3>
+            <form id="menuForm">
+                <input type="text" id="menuName" placeholder="Nama Menu" required>
+                <input type="number" id="menuPrice" placeholder="Harga" required>
+                <input type="text" id="menuCategory" placeholder="Kategori" value="makanan" required>
+                <button type="submit">Tambah Menu</button>
+            </form>
+            <br>
+            <button onclick="fetchAndDisplayMenu()">Lihat Semua Menu</button>
+            <div id="menuList"></div>
+            <br>
+            <h4>Atur Jadwal Mingguan</h4>
+            <button onclick="setWeeklySchedule()">Set Jadwal Minggu Ini</button>
+        </div>
+
+        <div class="section">
+            <h3>3. Buat Pesanan & Bayar (Pembeli Only)</h3>
+            <p>Pilih menu yang ingin dipesan:</p>
+            <div id="availableMenuList" class="menu-item-list"></div>
+            <br>
+            <button id="checkoutButton" onclick="createOrderAndPay()">Buat Pesanan & Bayar</button>
+            <div id="orderStatus"></div>
+        </div>
+
+        <div class="section">
+            <h3>4. Cek Pesanan & Cetak Invoice</h3>
+            <form id="checkOrderForm">
+                <input type="text" id="orderIdCheck" placeholder="ID Pesanan" required>
+                <button type="submit">Lihat Pesanan</button>
+            </form>
+            <br>
+            <h4>Update Status Pesanan</h4>
+            <form id="updateStatusForm">
+                <input type="text" id="orderIdUpdate" placeholder="ID Pesanan" required>
+                <select id="newStatus">
+                    <option value="diproses">Diproses</option>
+                    <option value="dikirim">Dikirim</option>
+                    <option value="selesai">Selesai</option>
+                    <option value="dibatalkan">Dibatalkan</option>
+                </select>
+                <button type="submit">Update Status</button>
+            </form>
+            <br>
+            <button onclick="generateInvoice()">Cetak Invoice</button>
+            <p id="orderDetail"></p>
+        </div>
+
+    </div>
+
+    <script>
+        const backendUrl = 'http://localhost:3000/api';
+        let appToken = '';
+        let userRole = '';
+        let availableMenus = [];
+
+        // --- Auth Functions ---
+        async function handleAuthSuccess(token, role, nama) {
+            appToken = token;
+            userRole = role;
+            document.getElementById('loginStatus').innerText = `Login Berhasil sebagai ${nama}!`;
+            document.getElementById('appTokenDisplay').innerText = appToken.substring(0, 20) + '...';
+            document.getElementById('userRole').innerText = userRole;
+
+            alert(`Login Berhasil sebagai ${userRole}!`);
+            fetchAndDisplayMenu();
+        }
+
+        async function loginUser(email, password) {
+            try {
+                const res = await axios.post(`${backendUrl}/users/login`, { email, password });
+                handleAuthSuccess(res.data.token, res.data.user.role, res.data.user.nama);
+            } catch (error) {
+                alert('Login Gagal: ' + (error.response?.data?.message || error.message));
+            }
+        }
+
+        async function registerUser(name, email, password, role, phone, address) {
+            try {
+                const res = await axios.post(`${backendUrl}/users/register`, { nama: name, email: email, password: password, role: role, nomorTelepon: phone, alamatPengiriman: address });
+                alert('Registrasi Berhasil! Silakan login.');
+                document.getElementById('registrationForm').reset();
+            } catch (error) {
+                alert('Registrasi Gagal: ' + (error.response?.data?.message || error.message));
+            }
+        }
+
+        async function handleCredentialResponse(response) {
+            try {
+                const res = await axios.post(`${backendUrl}/users/auth/google`, { token: response.credential });
+                handleAuthSuccess(res.data.token, res.data.user.role, res.data.user.nama);
+            } catch (error) {
+                alert('Login Gagal: ' + (error.response?.data?.message || error.message));
+            }
+        }
+        
+        document.getElementById('traditionalLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            loginUser(email, password);
+        });
+
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const role = document.getElementById('registerRole').value;
+            const phone = document.getElementById('registerPhone').value;
+            const address = document.getElementById('registerAddress').value;
+            
+            try {
+                await axios.post(`${backendUrl}/users/register`, { nama: name, email: email, password: password, role: role, nomorTelepon: phone, alamatPengiriman: address });
+                alert('Registrasi Berhasil! Silakan login.');
+                document.getElementById('registrationForm').reset();
+            } catch (error) {
+                alert('Registrasi Gagal: ' + (error.response?.data?.message || error.message));
+            }
+        });
+
+        // --- Menu & Schedule Functions ---
+        async function fetchAndDisplayMenu() {
+            try {
+                const res = await axios.get(`${backendUrl}/menu`);
+                availableMenus = res.data;
+                const menuListDiv = document.getElementById('availableMenuList');
+                menuListDiv.innerHTML = '';
+                availableMenus.forEach(menu => {
+                    menuListDiv.innerHTML += `
+                        <div class="menu-item">
+                            <label><input type="checkbox" data-id="${menu._id}" data-harga="${menu.harga}"> ${menu.nama} (Rp${menu.harga})</label>
+                            <input type="number" min="0" value="0" class="item-jumlah" data-id="${menu._id}" style="width: 50px;">
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error('Gagal memuat menu:', error.response?.data);
+            }
+        }
+
+        document.getElementById('menuForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (userRole !== 'penjual') {
+                alert('Anda tidak memiliki izin.');
+                return;
+            }
+            const nama = document.getElementById('menuName').value;
+            const harga = document.getElementById('menuPrice').value;
+            const kategori = document.getElementById('menuCategory').value;
+            try {
+                await axios.post(`${backendUrl}/menu`, { nama, harga: parseInt(harga), kategori }, {
+                    headers: { 'x-auth-token': appToken }
+                });
+                alert('Menu berhasil ditambahkan!');
+                fetchAndDisplayMenu();
+            } catch (error) {
+                alert('Gagal menambah menu: ' + (error.response?.data?.message || error.message));
+            }
+        });
+
+        async function setWeeklySchedule() {
+            if (userRole !== 'penjual') {
+                alert('Anda tidak memiliki izin.');
+                return;
+            }
+            const today = new Date();
+            const weeklySchedule = [];
+            for (let i = 0; i < 7; i++) {
+                const scheduleDate = new Date(today);
+                scheduleDate.setDate(today.getDate() + i);
+                const availableMenuIds = availableMenus.map(m => m._id);
+                weeklySchedule.push({
+                    tanggal: scheduleDate.toISOString(),
+                    menuTersedia: availableMenuIds,
+                    statusToko: 'buka'
+                });
+            }
+
+            try {
+                await axios.post(`${backendUrl}/jadwal/weekly`, weeklySchedule, {
+                    headers: { 'x-auth-token': appToken }
+                });
+                alert('Jadwal mingguan berhasil diatur!');
+            } catch (error) {
+                alert('Gagal mengatur jadwal: ' + (error.response?.data?.message || error.message));
+            }
+        }
+
+        // --- Order & Payment Functions ---
+        async function createOrderAndPay() {
+            if (!appToken || userRole !== 'pembeli') {
+                alert('Silakan login sebagai pembeli terlebih dahulu.');
+                return;
+            }
+
+            try {
+                const selectedItems = [];
+                document.querySelectorAll('#availableMenuList .menu-item input[type="checkbox"]:checked').forEach(checkbox => {
+                    const jumlahInput = checkbox.parentElement.parentElement.querySelector('.item-jumlah');
+                    const jumlah = jumlahInput.value;
+                    if (jumlah > 0) {
+                        selectedItems.push({
+                            menuItemId: checkbox.dataset.id,
+                            jumlah: parseInt(jumlah)
+                        });
+                    }
+                });
+
+                if (selectedItems.length === 0) {
+                    alert('Pilih setidaknya satu item.');
+                    return;
+                }
+
+                const orderData = {
+                    items: selectedItems,
+                    lokasiPengiriman: { lat: -6.2088, lng: 106.8456 }
+                };
+
+                const orderRes = await axios.post(`${backendUrl}/orders`, orderData, {
+                    headers: { 'x-auth-token': appToken }
+                });
+                const orderId = orderRes.data._id;
+                
+                const checkoutRes = await axios.post(`${backendUrl}/orders/${orderId}/checkout`, {}, {
+                    headers: { 'x-auth-token': appToken }
+                });
+                const snapToken = checkoutRes.data.token;
+
+                window.snap.pay(snapToken, {
+                    onSuccess: function(result) { alert("Pembayaran berhasil!"); console.log(result); },
+                    onPending: function(result) { alert("Menunggu pembayaran Anda."); console.log(result); },
+                    onError: function(result) { alert("Pembayaran gagal!"); console.log(result); }
+                });
+            } catch (error) {
+                alert('Pembayaran Gagal: ' + (error.response?.data?.message || error.message));
+            }
+        }
+
+        // --- Order Status & Invoice Functions ---
+        document.getElementById('checkOrderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const orderId = document.getElementById('orderIdCheck').value;
+            try {
+                const res = await axios.get(`${backendUrl}/orders/${orderId}`, {
+                    headers: { 'x-auth-token': appToken }
+                });
+                const order = res.data;
+                document.getElementById('orderDetail').innerHTML = `
+                    <p><strong>Status:</strong> ${order.status}</p>
+                    <p><strong>Total:</strong> Rp${order.totalHarga}</p>
+                    <p><strong>Pelanggan:</strong> ${order.userId.nama}</p>
+                `;
+            } catch (error) {
+                alert('Gagal mengambil pesanan: ' + (error.response?.data?.message || error.message));
+            }
+        });
+
+        document.getElementById('updateStatusForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (userRole !== 'penjual' && userRole !== 'pengantar') {
+                alert('Anda tidak memiliki izin.');
+                return;
+            }
+            const orderId = document.getElementById('orderIdUpdate').value;
+            const newStatus = document.getElementById('newStatus').value;
+            try {
+                await axios.put(`${backendUrl}/orders/${orderId}/status`, { newStatus }, {
+                    headers: { 'x-auth-token': appToken }
+                });
+                alert(`Status pesanan berhasil diupdate menjadi ${newStatus}!`);
+            } catch (error) {
+                alert('Gagal update status: ' + (error.response?.data?.message || error.message));
+            }
+        });
+        
+        async function generateInvoice() {
+            const orderId = document.getElementById('orderIdCheck').value;
+            if (!orderId) {
+                alert('Masukkan ID pesanan untuk dicetak.');
+                return;
+            }
+            const invoiceUrl = `${backendUrl}/orders/${orderId}/invoice`;
+            window.open(invoiceUrl, '_blank');
+        }
+    </script>
+</body>
+</html>

@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { createOrder, getOrders, updateOrderStatus, checkout, handleMidtransCallback, myOrders } = require('../controllers/orderController');
 const authMiddleware = require('../middleware/auth');
+const Order = require('../models/Order');
+const orderController = require('../controllers/orderController');
 
 router.post('/', authMiddleware(['pembeli']), createOrder);                             // POST /api/orders
 router.get('/', authMiddleware(['penjual']), getOrders);                                // GET /api/orders

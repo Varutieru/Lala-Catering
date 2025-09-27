@@ -2,13 +2,39 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-    nama: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true, minlength: 6, select: false },
-    nomorTelepon: { type: String, required: true },
-    alamatPengiriman: { type: String },
-    loginType: { type: String, enum: ['traditional', 'google'], required: true },
-    role: { type: String, enum: ['pembeli', 'penjual', 'pengantar'], default: 'pembeli' }
+
+    nama: { // Changed to nama for consistency
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
+        type: String,
+        required: true,
+        minlength: 6,
+        select: false 
+    },
+    nomorTelepon: { 
+        type: String,
+        required: true
+    },
+    alamatPengiriman: { 
+        type: String,
+    },
+    loginType: {
+        type: String,
+        enum: ['traditional', 'google'], 
+        required: true
+    },
+    role: {
+        type: String,
+        enum: ['pembeli', 'penjual', 'pengantar'],
+        default: 'pembeli'
+    }
 }, { timestamps: true });
 
 // Hash password sebelum save
