@@ -19,6 +19,11 @@ const menuItemSchema = new mongoose.Schema({
     stok: {
         type: Number,
         default: 0
+    },
+    jadwal:{
+        type: [String],
+        enum: ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'],
+        default: []
     }
 });
 
