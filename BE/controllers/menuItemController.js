@@ -12,7 +12,7 @@ const upload = multer({ dest: 'uploads/' });
 
 const getMenuItems = async (req, res) => {
     try {
-        const menuItems = await MenuItem.find({ isAvailable: true });
+        const menuItems = await MenuItem.find();
         res.json(menuItems);
     } catch (err) {
         return res.status(500).json({ message: err.message });
@@ -21,13 +21,13 @@ const getMenuItems = async (req, res) => {
 
 const createMenuItem = async (req, res) => {
     try {
-        const { nama, deskripsi, harga, kategori, stok } = req.body;
+        const { nama, deskripsi, harga, stok } = req.body;
         let gambar = null;
         if (req.file) {
             const result = await cloudinary.uploader.upload(req.file.path);
             gambar = result.secure_url;
         }
-        const newItem = new MenuItem({ nama, deskripsi, harga, kategori, gambar, stok });
+        const newItem = new MenuItem({ nama, deskripsi, harga, gambar, stok });
         await newItem.save();
         res.status(201).json(newItem);
     } catch (err) {
