@@ -55,7 +55,7 @@
             </form>
             <br>
             <h4>Login Google</h4>
-            <div id="g_id_onload" data-client_id="[YOUR_GOOGLE_CLIENT_ID]" data-callback="handleCredentialResponse"></div>
+            <div id="g_id_onload" data-client_id="458932019092-3s36elfsoko1q4iqns7l0hmel0aibk82.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
             <div class="g_id_signin" data-type="standard"></div>
             <p id="loginStatus"></p>
         </div>
@@ -64,8 +64,10 @@
             <h3>2. Manajemen Menu & Jadwal (Penjual Only)</h3>
             <form id="menuForm">
                 <input type="text" id="menuName" placeholder="Nama Menu" required>
+                <input type="text" id="menuDescription" placeholder="Deskripsi Menu" required>
                 <input type="number" id="menuPrice" placeholder="Harga" required>
-                <input type="text" id="menuCategory" placeholder="Kategori" value="makanan" required>
+                <input type="number" id="menuStock" placeholder="Stok Awal" value="10" required>
+                <input type="file" id="menuImage" name="file" required>
                 <button type="submit">Tambah Menu</button>
             </form>
             <br>
@@ -209,9 +211,11 @@
             }
             const nama = document.getElementById('menuName').value;
             const harga = document.getElementById('menuPrice').value;
-            const kategori = document.getElementById('menuCategory').value;
+            const stok = document.getElementById('menuStock').value;
+            const deskripsi = document.getElementById('menuDescription').value;
+            const file = document.getElementById('menuImage').files[0];
             try {
-                await axios.post(`${backendUrl}/menu`, { nama, harga: parseInt(harga), kategori }, {
+                await axios.post(`${backendUrl}/menu`, { nama, harga: parseInt(harga), stok: parseInt(stok), deskripsi, file }, {
                     headers: { 'x-auth-token': appToken }
                 });
                 alert('Menu berhasil ditambahkan!');
