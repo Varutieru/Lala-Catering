@@ -113,12 +113,24 @@ export default function HomePage () {
         
         {/* CATERING */}
         <div className="w-full h-[50vh] bg-[#EF6C6C] flex items-center justify-center">
-
+          <button
+            onClick={() => router.push('/catering')}
+            type="button"
+            className="relative flex items-center justify-center px-10 py-5 rounded-full border-2 border-[#4CB8A2] text-[#FFF1E8] font-century-gothic-bold overflow-hidden group">
+            <span className="absolute inset-0 w-0 bg-[#4CB8A2] rounded-full transition-all duration-300 ease-out group-hover:w-full"></span>
+            <span className="relative z-10 text-2xl md:text-4xl">subscribe</span>
+          </button>
         </div>
 
         {/* ONLINE ORDER */}
-        <div className="w-full h-[50vh] bg-[#F9A94E] flex justify-between items-center">
-
+        <div className="w-full h-[50vh] bg-[#F9A94E] flex justify-center items-center">
+          <button
+            onClick={() => router.push('/order')}
+            type="button"
+            className="relative flex items-center justify-center px-10 py-5 rounded-full border-2 border-[#F4F3F6] text-[#2F4F7F] font-century-gothic-bold overflow-hidden group">
+            <span className="absolute inset-0 w-0 bg-[#F4F3F6] rounded-full transition-all duration-300 ease-out group-hover:w-full"></span>
+            <span className="relative z-10 text-2xl md:text-4xl">order now</span>
+          </button>
         </div>
 
       </div>
