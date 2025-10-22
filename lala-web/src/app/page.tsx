@@ -1,15 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
 
 import Header from "@/components/header";
 
 export default function HomePage () {
 
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const router = useRouter();
+  const pathname = usePathname();
   
   return(
-    <main className="overflow-x-hidden max-w-screen">
+    <main className="overflow-x-hidden max-w-screen h-screen">
       <div className="bg-[#EF6C6C] relative w-full min-h-screen max-w-full">
 
         {/*HERO BG */}
@@ -31,6 +36,45 @@ export default function HomePage () {
           </header>
 
           {/* HERO */}
+            <div className="absolute -translate-x-1/2 -translate-y-1/2 
+                          w-[80vw] md:w-[60vw] lg:w-[42vw] 
+                          flex flex-col justify-center items-center gap-8 md:gap-12">
+
+              {/* TAGLINE */}
+              <h1 className="font-century-gothic-regular 
+                           text-3xl md:text-5xl lg:text-6xl 
+                           text-[#FFF1E8] text-center leading-tight lowercase">
+                nutritious foods at your fingertips
+              </h1>
+
+              {/* BUTTONS CONTAINER */}
+              <div className="w-full flex justify-around items-center gap-4">
+
+                {/* CATERING */}
+                <div className="relative w-[200px] h-[80px] md:w-[250px] md:h-[100px] lg:w-[300px] lg:h-[120px]">
+                  <Image
+                    src={"assets/hero/catering.svg"}
+                            alt="Catering Button"
+                            fill
+                            className="object-contain cursor-pointer hover:scale-105 transition-transform duration-300"
+                            onClick={() => router.push("/catering")}
+                  />
+                </div>
+
+                {/* ONLINE ORDER */ }
+                <div className="relative w-[200px] h-[80px] md:w-[250px] md:h-[100px] lg:w-[300px] lg:h-[120px]">
+                  <Image
+                    src={"assets/hero/onlineorder.svg"}
+                            alt="Catering Button"
+                            fill
+                            className="object-contain cursor-pointer hover:scale-105 transition-transform duration-300"
+                            onClick={() => router.push("/order")}
+                  />
+                </div>
+
+              </div>
+
+            </div>
 
         </div>
       </div>

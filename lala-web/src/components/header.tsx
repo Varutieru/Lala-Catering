@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 
-/* NAV ITEMS */
 const navItems = [
     { label: "CATERING", href: "/catering"},
     { label: "ORDER", href: "/order"},
@@ -53,19 +52,21 @@ export const Header = () => {
                 {/* NAVBAR */ }
                 <nav
                     aria-label="Primary Navigation"
-                    className="hidden md:flex max-w-[56.25vw] sm:min-h-[30px] md:min-h-[55px] lg:min-h-[80px] items-center justify-between gap-10"
+                    className="hidden md:flex max-w-[56.25vw] sm:min-h-[30px] md:min-h-[55px] lg:min-h-[80px] items-center justify-between gap-20"
                 >
                     {navItems.map((item, index) => (
                         <Link
                             key={item.href}
                             href={item.href}
                             onClick={item.href === "/" ? handleHomeClick : undefined}
-                            className="relative px-4 md:px-[20px] z-10
-                                    text-[#FFF1E8] font-century-gothic-regular text-base sm:text-sm md:text-md lg:text-lg"
+                            className="relative inline-block group
+                                    text-[#FFF1E8] font-century-gothic-regular text-base sm:text-sm md:text-md lg:text-lg
+                                    after:content-[''] after:absolute after:bottom-0 after:left-0 
+                                    after:w-0 after:h-[1px] after:rounded-full after:bg-[#FFF1E8]
+                                    after:transition-all after:duration-300 after:ease-out
+                                    hover:after:w-full"
                         >
-                            <span className="relative z-10">
-                                {item.label}
-                            </span>
+                            {item.label}
                         </Link>
                     ))}
                 </nav>
