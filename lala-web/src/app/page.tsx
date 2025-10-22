@@ -31,7 +31,14 @@ export default function HomePage () {
           </header>
 
           {/* HERO */}
-
+          <div className="absolute top-[27vh] left-1/2 -translate-x-1/2 w-full text-center text-white">
+            <p className="font-century-gothic-regular text-7xl lg:text-8xl mb-4">
+              nutrious food
+            </p>
+            <p className="font-century-gothic-regular text-7xl lg:text-8xl">
+              at your fingertips
+            </p> 
+          </div>
         </div>
       </div>
     </main>
