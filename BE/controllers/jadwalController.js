@@ -77,7 +77,4 @@ const getMenuByDay = async (req, res) => {
     }
 };
 
-module.exports = { getMenuByDay };
-
-
 module.exports = { setMenuSchedule, getScheduleByDay, getTodayMenu, getMenuByDay };

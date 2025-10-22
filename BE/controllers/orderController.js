@@ -158,6 +158,10 @@ const generateInvoice = async (req, res) => {
             return res.status(404).json({ message: 'Pesanan tidak ditemukan.' });
         }
 
+        if (req.user.role !== 'penjual' && order.userId._id.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'Akses ditolak.' });
+        }
+
         const invoiceHtml = `
             <h1>Invoice Pesanan</h1>
             <p>Nomor Pesanan: ${order._id}</p>

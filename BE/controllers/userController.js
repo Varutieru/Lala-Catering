@@ -70,7 +70,9 @@ const googleLogin = async (req, res) => {
         nama: name,
         email: email,
         loginType: 'google',
-        role: 'pembeli'
+        role: 'pembeli',
+        nomorTelepon: '000000000',
+        alamatPengiriman: 'MUST_UPDATE_PROFILE'
       });
       await user.save();
     }

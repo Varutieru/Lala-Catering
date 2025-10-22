@@ -13,7 +13,7 @@ const menuItemSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    gambarUrl: {
+    imageUrl: {
         type: String
     },
     stok: {
@@ -24,7 +24,7 @@ const menuItemSchema = new mongoose.Schema({
         type: [String],
         enum: ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'],
         default: []
-    }
+    },
 });
 
 const MenuItem = mongoose.model('MenuItem', menuItemSchema);

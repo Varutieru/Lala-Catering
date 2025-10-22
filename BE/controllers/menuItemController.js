@@ -22,12 +22,13 @@ const getMenuItems = async (req, res) => {
 const createMenuItem = async (req, res) => {
     try {
         const { nama, deskripsi, harga, stok } = req.body;
-        let gambar = null;
-        if (req.file) {
-            const result = await cloudinary.uploader.upload(req.file.path);
-            gambar = result.secure_url;
+        let imageUrl = null;
+        const filePath = req.file ? req.file.path : null;
+        if (filePath) {
+            const result = await cloudinary.uploader.upload(filePath);
+            imageUrl = result.secure_url;
         }
-        const newItem = new MenuItem({ nama, deskripsi, harga, gambar, stok });
+        const newItem = new MenuItem({ nama, deskripsi, harga, imageUrl, stok });
         await newItem.save();
         res.status(201).json(newItem);
     } catch (err) {
@@ -59,7 +60,7 @@ const updateMenuItem = async (req, res) => {
 
         if (req.file) {
             const result = await cloudinary.uploader.upload(req.file.path);
-            updateData.gambar = result.secure_url;
+            updateData.imageUrl = result.secure_url;
         }
 
         const updatedItem = await MenuItem.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
