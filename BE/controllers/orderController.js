@@ -3,7 +3,7 @@ const MenuItem = require('../models/MenuItem');
 const User = require('../models/User');
 const { sendEmail } = require('../services/emailService');
 const midtransClient = require('midtrans-client');
-const pdf = require('html-pdf');
+const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
 
 const snap = new midtransClient.Snap({
     isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
@@ -152,7 +152,9 @@ const handleMidtransCallback = async (req, res) => {
 const generateInvoice = async (req, res) => {
     try {
         const { id } = req.params;
-        const order = await Order.findById(id).populate('userId', 'nama email alamatPengiriman').populate('items.menuItemId', 'nama harga');
+        const order = await Order.findById(id)
+            .populate('userId', 'nama email alamatPengiriman')
+            .populate('items.menuItemId', 'nama harga');
 
         if (!order) {
             return res.status(404).json({ message: 'Pesanan tidak ditemukan.' });
@@ -162,53 +164,72 @@ const generateInvoice = async (req, res) => {
             return res.status(403).json({ message: 'Akses ditolak.' });
         }
 
-        const invoiceHtml = `
-            <h1>Invoice Pesanan</h1>
-            <p>Nomor Pesanan: ${order._id}</p>
-            <p>Nama Pelanggan: ${order.userId.nama}</p>
-            <p>Alamat Pengiriman: ${order.userId.alamatPengiriman}</p>
-            <p>Tanggal Pesanan: ${new Date(order.tanggalPesanan).toLocaleDateString()}</p>
-            <h2>Rincian Pesanan:</h2>
-            <table border="1" cellpadding="5" cellspacing="0">
-                <tr>
-                    <th>Nama Item</th>
-                    <th>Harga</th>
-                    <th>Jumlah</th>
-                    <th>Total</th>
-                </tr>
-                ${order.items.map(item => `
-                    <tr>
-                        <td>${item.namaItem}</td>
-                        <td>${item.harga}</td>
-                        <td>${item.jumlah}</td>
-                        <td>${item.harga * item.jumlah}</td>
-                    </tr>
-                `).join('')}
-            </table>
-        `;
+        // --- START PDF ---
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage([595, 842]); // A4 size
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-        const options = {
-            format: 'A4',
-            orientation: 'portrait',
-            border: {
-                top: '1in',
-                right: '1in',
-                bottom: '1in',
-                left: '1in'
-            }
+        let y = 800; // starting point
+
+        const draw = (text, x, size = 12) => {
+            page.drawText(text, { x, y, size, font });
+            y -= size + 6;
         };
 
-        pdf.create(invoiceHtml, options).toBuffer((err, buffer) => {
-            if (err) return res.status(500).json({ message: err.message });
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', `attachment; filename=invoice_${order._id}.pdf`);
-            res.send(buffer);
+        // Header
+        draw("INVOICE PESANAN", 50, 20);
+        y -= 10;
+
+        draw(`Nomor Pesanan: ${order._id}`, 50);
+        draw(`Nama Pelanggan: ${order.userId.nama}`, 50);
+        draw(`Alamat Pengiriman: ${order.userId.alamatPengiriman}`, 50);
+        draw(`Tanggal Pesanan: ${new Date(order.tanggalPesanan).toLocaleDateString()}`, 50);
+
+        y -= 20;
+        draw("Rincian Pesanan:", 50, 16);
+        y -= 10;
+
+        // Table header
+        page.drawText("Item", { x: 50, y, size: 12, font });
+        page.drawText("Harga", { x: 250, y, size: 12, font });
+        page.drawText("Jumlah", { x: 350, y, size: 12, font });
+        page.drawText("Total", { x: 450, y, size: 12, font });
+        y -= 20;
+
+        let grandTotal = 0;
+
+        // Table rows
+        order.items.forEach(item => {
+            const namaItem = item.namaItem || item.menuItemId?.nama;
+            const harga = item.harga || item.menuItemId?.harga;
+            const jumlah = item.jumlah;
+
+            const total = harga * jumlah;
+            grandTotal += total;
+
+            page.drawText(`${namaItem}`, { x: 50, y, size: 12, font });
+            page.drawText(`Rp ${harga}`, { x: 250, y, size: 12, font });
+            page.drawText(`${jumlah}`, { x: 350, y, size: 12, font });
+            page.drawText(`Rp ${total}`, { x: 450, y, size: 12, font });
+
+            y -= 20;
         });
+
+        y -= 20;
+        draw(`TOTAL AKHIR: Rp ${grandTotal}`, 50, 14);
+
+        const pdfBytes = await pdfDoc.save();
+        // --- END PDF ---
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `attachment; filename=invoice_${order._id}.pdf`);
+        res.send(Buffer.from(pdfBytes));
 
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 };
+
 
 const myOrders = async (req, res) => {
     try {
