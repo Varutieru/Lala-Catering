@@ -129,7 +129,7 @@ export default function HomePage () {
               {/* Text and Button Container */}
             <div className="relative w-full h-full flex items-center justify-end px-6 md:px-12">
               <div className="flex flex-col items-start lg:items-end gap-6">
-                <div className="hidden min-[1720px]:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <div className="hidden min-[1720px]:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                 <button
                   onClick={() => router.push('/catering')}
                   type="button"
@@ -138,7 +138,7 @@ export default function HomePage () {
                     <span className="relative z-10 text-2xl">subscribe</span>
                   </button>
                 </div>
-            <div className="flex justify-start w-full min-[1720px]:hidden">
+            <div className="flex justify-start w-full min-[1720px]:hidden z-10">
                   <button
                     onClick={() => router.push('/catering')}
                     type="button"
@@ -164,10 +164,10 @@ export default function HomePage () {
                       CATERING
                     </h3>
                   </div>
-
-                  <p className="text-sm md:text-2xl lg:text-2xl font-century-gothic-regular lg:font-century-gothic-bold mt-4 text-right leading-tight z-10">
+                  <div className="w-[40vw]">
+                  <p className="text-sm md:text-2xl lg:text-[30px] font-century-gothic-regular lg:font-century-gothic-bold mt-4 text-right leading-tight z-10">
                     Subscribe to our daily-scheduled meal with the customizable plan and price
-                  </p>
+                  </p></div>
                 </motion.div>      
                 </div>
               </div>
@@ -177,7 +177,7 @@ export default function HomePage () {
           {/* ONLINE ORDER */}
           <div className="w-full h-[50vh] bg-[#F9A94E] relative">
             {/*Image Container*/}
-            <div className="absolute bottom-0 right-[10vw] w-[45vw] h-[45vh]">
+            <div className="absolute -top-[30vw] -left-[50vw] w-[237.7vw] h-[216.575vh]  lg:translate-x-[10vw]">
               <Image
                 src="/assets/order/order.svg"
                 alt="Online Order Items"
@@ -205,10 +205,12 @@ export default function HomePage () {
                       className="object-contain"
                       priority
                     />
+                    
                   </div>
-                  <p className="text-sm md:text-xl lg:text-2xl text-[#2F4F7F]/90 font-century-gothic-bold max-w-[280px] md:max-w-md lg:max-w-lg leading-tight">
+                  <div className="relative lg:w-[40vw] lg:left-10 -top-15">
+                  <p className="lg:text-[30px] left-10 text-sm md:text-xl lg:text-2xl text-[#2F4F7F]/90 font-century-gothic-bold max-w-[280px] md:max-w-md lg:max-w-lg ">
                     Order your favorite menu for any occasion
-                  </p>
+                  </p></div>
                 </motion.div>
                 <div className="hidden min-[1720px]:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <button
