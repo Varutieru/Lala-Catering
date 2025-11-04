@@ -115,7 +115,7 @@ export default function HomePage () {
           {/* CATERING */}
           <div className="w-full h-[50vh] bg-[#EF6C6C] flex items-center">
             <div className="w-full h-[50vh] bg-[#EF6C6C] relative overflow-hidden">
-            {/* Catering Image - positioned to left */}
+            {/* Catering Image */}
             <div className="items-end absolute -top-20 -left-[5vw] w-[70vw] md:w-[60vw] lg:w-[50vw] h-[60vh] md:h-[70vh] lg:h-[94.805vh] -translate-x-[10vw] lg:translate-x-0">
               <Image
                 src="/assets/catering/catering.svg"
@@ -186,7 +186,7 @@ export default function HomePage () {
                   priority
                 />
               </div>
-            {/* Content Container - Use relative to stack on top */}
+            {/* Content Container */}
             <div className="relative w-full h-full flex items-center px-6 md:px-12">
               <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
                 <motion.div
@@ -240,8 +240,9 @@ export default function HomePage () {
           {/* Content Container */}
 
 
-          {/* Main Container with Background - Removed mx-6 md:mx-12 */}
+          {/* Main Container with Background */}
           <div className="w-full h-full items-center relative overflow-hidden bg-[#4CB8A2]/10 ">
+
           {/* Content Container */}
           <div className="w-full h-full ml-40 mt-20 flex items-center">
             {/* Section Title */}
@@ -249,13 +250,14 @@ export default function HomePage () {
               ABOUT US
             </h2>
           </div>
+
             {/* Background Image */}
             <div className="absolute flex inset-0 w-full h-[70vh] mt-55">
               <Image
                 src="/assets/bg/aboutbg.svg"
                 alt="Background pattern"
                 fill
-                className="object-cover brightness-60"
+                className="object-cover brightness-65"
               />
             </div>
 
@@ -271,8 +273,9 @@ export default function HomePage () {
               />
             </div>
 
-            {/* Content Container - Added horizontal padding here instead */}
+            {/* Content Container */}
             <div className="relative z-10 w-full px-6 md:px-12 py-8 md:py-12 flex flex-col lg:flex-row items-center gap-8 translate-x-1/2 -top-180 -left-40">
+              
               {/* Text Content */}
               <div className="w-full lg:w-1/2">
                 <h3 className="text-3xl md:text-4xl lg:text-5xl text-white mb-4">
@@ -284,6 +287,7 @@ export default function HomePage () {
                   Curious about our kitchen and our web-development team?
                   Feel free to explore more at our About Us page!
                 </p>
+
                 <button
                   onClick={() => router.push('/catering')}
                   type="button"
