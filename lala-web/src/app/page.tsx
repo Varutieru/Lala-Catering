@@ -116,7 +116,7 @@ export default function HomePage () {
           <div className="w-full h-[50vh] bg-[#EF6C6C] flex items-center">
             <div className="w-full h-[50vh] bg-[#EF6C6C] relative overflow-hidden">
             {/* Catering Image - positioned to left */}
-            <div className="absolute -top-20 -left-[5vw] w-[70vw] md:w-[60vw] lg:w-[50vw] h-[60vh] md:h-[70vh] lg:h-[94.805vh] -translate-x-[10vw] lg:translate-x-0">
+            <div className="items-end absolute -top-20 -left-[5vw] w-[70vw] md:w-[60vw] lg:w-[50vw] h-[60vh] md:h-[70vh] lg:h-[94.805vh] -translate-x-[10vw] lg:translate-x-0">
               <Image
                 src="/assets/catering/catering.svg"
                 alt="Catering Items"
@@ -129,7 +129,7 @@ export default function HomePage () {
               {/* Text and Button Container */}
             <div className="relative w-full h-full flex items-center justify-end px-6 md:px-12">
               <div className="flex flex-col items-start lg:items-end gap-6">
-                <div className="hidden min-[1720px]:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                <div className="hidden lg:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                 <button
                   onClick={() => router.push('/catering')}
                   type="button"
@@ -138,7 +138,7 @@ export default function HomePage () {
                     <span className="relative z-10 text-2xl">subscribe</span>
                   </button>
                 </div>
-            <div className="flex justify-start w-full min-[1720px]:hidden z-10">
+            <div className="flex justify-start w-full lg:hidden z-10">
                   <button
                     onClick={() => router.push('/catering')}
                     type="button"
@@ -153,7 +153,7 @@ export default function HomePage () {
                   initial={{ opacity: 0, x: 100 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
-                  viewport={{ once: false }}
+                  viewport={{ once: true }}
                   className="flex flex-col items-start lg:items-end relative"
                 >
                   <div className="relative">
@@ -177,16 +177,15 @@ export default function HomePage () {
           {/* ONLINE ORDER */}
           <div className="w-full h-[50vh] bg-[#F9A94E] relative">
             {/*Image Container*/}
-            <div className="absolute -top-[30vw] -left-[50vw] w-[237.7vw] h-[216.575vh]  lg:translate-x-[10vw]">
-              <Image
-                src="/assets/order/order.svg"
-                alt="Online Order Items"
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-
+              <div className="absolute -top-[30vw] md:-top-[30vw] md:left-[15vw] lg:-top-[30vw] lg:-left-[45vw] w-[180vw] h-[120vh] md:w-[160vw] md:h-[120vh] lg:w-[237.7vw] lg:h-[216.575vh] lg:translate-x-[10vw]">
+                <Image
+                  src="/assets/order/order.svg"
+                  alt="Online Order Items"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
             {/* Content Container - Use relative to stack on top */}
             <div className="relative w-full h-full flex items-center px-6 md:px-12">
               <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
@@ -194,10 +193,10 @@ export default function HomePage () {
                   initial={{ opacity: 0, x: -100 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
-                  viewport={{ once: false }}
-                  className="flex flex-col items-end"
+                  viewport={{ once: true }}
+                  className="flex flex-col"
                 >
-                  <div className="relative -left-10 -top-15  w-[40vw] h-[42vh]">
+                  <div className="relative -top-15 md:-top-25 lg:-left-10 lg:-top-15  w-[40vw] h-[42vh]">
                     <Image
                       src="/assets/order/ordertext.svg"
                       alt="Online Order Items"
@@ -207,12 +206,21 @@ export default function HomePage () {
                     />
                     
                   </div>
-                  <div className="relative lg:w-[40vw] lg:left-10 -top-15">
-                  <p className="lg:text-[30px] left-10 text-sm md:text-xl lg:text-2xl text-[#2F4F7F]/90 font-century-gothic-bold max-w-[280px] md:max-w-md lg:max-w-lg ">
+                  <div className="relative -top-40  lg:w-[40vw] lg:left-10 lg:-top-15">
+                  <p className="flex lg:text-[30px] left-10 text-sm md:text-xl lg:text-2xl text-[#2F4F7F]/90 font-century-gothic-bold max-w-[280px] md:max-w-md lg:max-w-lg ">
                     Order your favorite menu for any occasion
                   </p></div>
-                </motion.div>
-                <div className="hidden min-[1720px]:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                </motion.div>   
+                <div className="flex justify-start lg:hidden top-88 absolute">
+                  <button
+                    onClick={() => router.push('/catering')}
+                    type="button"
+                    className="relative flex items-center justify-center px-6 py-3 md:px-8 md:py-4 rounded-full border-2 border-[#F4F3F6] text-[#2F4F7F] font-century-gothic-bold overflow-hidden group">
+                    <span className="absolute inset-0 w-0 bg-[#F4F3F6] rounded-full transition-all duration-300 ease-out group-hover:w-full"></span>
+                    <span className="relative z-10 text-lg md:text-xl">order now</span>
+                  </button>
+                </div>
+                <div className="hidden lg:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <button
                   onClick={() => router.push('/order')}
                   type="button"
@@ -227,6 +235,66 @@ export default function HomePage () {
           </div>
         </div>
 
+        {/* ABOUT US SECTION */}
+        <div className="w-full flex min-h-screen bg-[#4CB8A2] relative overflow-hidden">
+          {/* Content Container */}
+
+
+          {/* Main Container with Background - Removed mx-6 md:mx-12 */}
+          <div className="w-full h-full items-center relative overflow-hidden bg-[#4CB8A2]/10 ">
+          {/* Content Container */}
+          <div className="w-full h-full ml-40 mt-20 flex items-center">
+            {/* Section Title */}
+            <h2 className="text-5xl flex z-10 md:text-7xl lg:text-9xl translate-x-1/5 text-white font-sao-torpes items-center w-full h-full mb-12">
+              ABOUT US
+            </h2>
+          </div>
+            {/* Background Image */}
+            <div className="absolute flex inset-0 w-full h-[70vh] mt-55">
+              <Image
+                src="/assets/bg/aboutbg.svg"
+                alt="Background pattern"
+                fill
+                className="object-cover brightness-60"
+              />
+            </div>
+
+    
+            {/* Image Container */}
+            <div className="relative flex flex-row lg:-top-36 lg:-right-20 lg:w-[30vw] h-[30vh] lg:h-[80vh]">
+              <Image
+                src="/assets/about/bulala.svg"
+                alt="Ms. Lala"
+                fill
+                className="object-contain items-end"
+                priority
+              />
+            </div>
+
+            {/* Content Container - Added horizontal padding here instead */}
+            <div className="relative z-10 w-full px-6 md:px-12 py-8 md:py-12 flex flex-col lg:flex-row items-center gap-8 translate-x-1/2 -top-180 -left-40">
+              {/* Text Content */}
+              <div className="w-full lg:w-1/2">
+                <h3 className="text-3xl md:text-4xl lg:text-5xl text-white mb-4">
+                  <span className="font-century-gothic-bold">Hello, I am </span>
+                  <span className="font-luthon-southard-script text-8xl text-[#EF6C6C]">Ms Lala</span>
+                </h3>
+
+                <p className="text-white/90 text-lg md:text-xl mb-6 font-century-gothic-regular">
+                  Curious about our kitchen and our web-development team?
+                  Feel free to explore more at our About Us page!
+                </p>
+                <button
+                  onClick={() => router.push('/catering')}
+                  type="button"
+                  className="relative flex items-center justify-center px-10 py-5 rounded-full border-2 border-[#F4F3F6] text-[#EF6C6C] font-century-gothic-bold overflow-hidden group">
+                    <span className="absolute inset-0 w-0 bg-[#F4F3F6] rounded-full transition-all duration-300 ease-out group-hover:w-full"></span>
+                    <span className="relative z-10 text-2xl">about us</span>
+                  </button>
+              </div>
+            </div>
+          </div>
+      </div>
     </main>
   )
 }
