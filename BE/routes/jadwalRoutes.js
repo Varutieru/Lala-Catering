@@ -6,7 +6,7 @@ const { setMenuSchedule, getTodayMenu, getScheduleByDay, getMenuByDay } = requir
 router.post('/', authMiddleware(['penjual']), setMenuSchedule);     // POST /api/jadwal
 
 router.get('/today', getTodayMenu);                                 // GET /api/jadwal/today
-router.get('/daily', getScheduleByDay);                             // GET /api/jadwal/daily
+router.get('/week', getScheduleByDay);                              // GET /api/jadwal/week
 router.get('/:hari', getMenuByDay);                                 // GET /api/jadwal/:day
 
 module.exports = router; 
