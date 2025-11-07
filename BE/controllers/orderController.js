@@ -12,16 +12,24 @@ const snap = new midtransClient.Snap({
 
 const createOrder = async (req, res) => {
     try {
-        const { items, lokasiPengiriman, alamatPengirimanText } = req.body;
+        const { items, lokasiPengiriman, metodePengambilan } = req.body;
+        const user = await User.findById(req.user.id);
+        
         let totalHarga = 0;
         const orderedItems = [];
 
         for (const item of items) {
             const menuItem = await MenuItem.findById(item.menuItemId);
+
             if (!menuItem || menuItem.stok < item.jumlah) {
                 return res.status(404).json({ message: `Item menu '${item.menuItemId}' tidak tersedia.` });
             }
+
             totalHarga += menuItem.harga * item.jumlah;
+            
+            menuItem.stok -= item.jumlah;
+            await menuItem.save();
+
             orderedItems.push({
                 menuItemId: menuItem._id,
                 namaItem: menuItem.nama,
@@ -32,17 +40,23 @@ const createOrder = async (req, res) => {
 
         const newOrder = new Order({
             userId: req.user.id,
+            userInfo:{
+                nama: user.nama,
+                nomorTelepon: user.nomorTelepon,
+                email: user.email
+            },
             items: orderedItems,
             totalHarga,
             lokasiPengiriman,
-            alamatPengirimanText
+            alamatPengirimanText:user.alamatPengiriman,
+            metodePengambilan
         });
         await newOrder.save();
 
-        const user = await User.findById(req.user.id);
-        if (user && user.email) {
-            sendEmail(user.email, 'Konfirmasi Pesanan', `Halo ${user.nama}, pesanan Anda dengan ID ${newOrder._id} telah diterima dan sedang diproses.`);
-        }
+        
+        // if (user.email) {
+        //     sendEmail(user.email, 'Konfirmasi Pesanan', `Halo ${user.nama}, pesanan Anda dengan ID ${newOrder._id} telah diterima dan sedang diproses.`);
+        // }
 
         res.status(201).json(newOrder);
     } catch (err) {

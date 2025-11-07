@@ -27,6 +27,11 @@ const orderSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    userInfo:{
+        nama: {type :String},
+        nomorTelepon: {type :String},
+        email: {type :String}
+    },
     items: [orderItemSchema],
     totalHarga: {
         type: Number,
@@ -42,9 +47,15 @@ const orderSchema = new mongoose.Schema({
             required: true
         }
     },
+    alamatPengirimanText: String,
     tanggalPesanan: {
         type: Date,
         default: Date.now
+    },
+    metodePengambilan: {
+        type: String,
+        enum: ['delivery', 'pickup'],
+        required: true
     },
     status: {
         type: String,
