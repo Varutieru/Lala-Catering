@@ -26,14 +26,14 @@ const setMenuSchedule = async (req, res) => {
 
 const getScheduleByDay = async (req, res) => {
     try {
-        const menus = await MenuItem.find({}, '_id jadwal'); 
+        const menus = await MenuItem.find({}, 'nama jadwal'); 
 
         const hariList = ['senin','selasa','rabu','kamis','jumat','sabtu','minggu'];
         const result = hariList.map(hari => ({
             hari,
             menuTersedia: menus
                 .filter(menu => menu.jadwal.includes(hari))
-                .map(menu => menu._id.toString())
+                .map(menu => menu.nama)
         }));
 
         res.status(200).json(result);
