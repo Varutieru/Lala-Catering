@@ -213,7 +213,7 @@ export default function HomePage () {
                 </motion.div>   
                 <div className="flex justify-start lg:hidden top-88 absolute">
                   <button
-                    onClick={() => router.push('/catering')}
+                    onClick={() => router.push('/order')}
                     type="button"
                     className="relative flex items-center justify-center px-6 py-3 md:px-8 md:py-4 rounded-full border-2 border-[#F4F3F6] text-[#2F4F7F] font-century-gothic-bold overflow-hidden group">
                     <span className="absolute inset-0 w-0 bg-[#F4F3F6] rounded-full transition-all duration-300 ease-out group-hover:w-full"></span>
@@ -252,18 +252,18 @@ export default function HomePage () {
           </div>
 
             {/* Background Image */}
-            <div className="absolute flex inset-0 w-full h-[70vh] mt-55">
+            <div className="absolute flex inset-0 w-[90vw] h-[70vh] ml-24 mt-55">
               <Image
-                src="/assets/bg/aboutbg.svg"
-                alt="Background pattern"
-                fill
-                className="object-cover brightness-65"
+              src="/assets/bg/aboutbg.svg"
+              alt="Background pattern"
+              fill
+              className="object-cover object-none rounded-4xl brightness-65"
               />
             </div>
 
     
             {/* Image Container */}
-            <div className="relative flex flex-row lg:-top-36 lg:-right-20 lg:w-[30vw] h-[30vh] lg:h-[80vh]">
+            <div className="relative flex flex-row lg:-top-43 lg:-right-20 lg:w-[30vw] h-[30vh] lg:h-[85vh]">
               <Image
                 src="/assets/about/bulala.svg"
                 alt="Ms. Lala"
@@ -283,9 +283,10 @@ export default function HomePage () {
                   <span className="font-luthon-southard-script text-8xl text-[#EF6C6C]">Ms Lala</span>
                 </h3>
 
-                <p className="text-white/90 text-lg md:text-xl mb-6 font-century-gothic-regular">
-                  Curious about our kitchen and our web-development team?
-                  Feel free to explore more at our About Us page!
+                <p className="text-white/90 text-lg md:text-xl lg:text-3xl mb-6 font-century-gothic-regular">
+                  <span className="">Curious about our kitchen and our web-development team? Feel free to explore more at our </span>
+                  <span className="font-century-gothic-bold">About Us</span>
+                  <span className=""> page!</span>
                 </p>
 
                 <button
