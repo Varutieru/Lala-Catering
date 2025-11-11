@@ -1,0 +1,16 @@
+{
+  "name": "lala-catering",
+  "version": "1.0.0",
+  "description": "## 📖 Deskripsi Aplikasi",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"cd BE && npm run dev\" \"cd lala-web && npm run dev\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
