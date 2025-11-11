@@ -31,3 +31,4 @@ BE/.env
 BE/npm-debug.log*
 BE/yarn-debug.log*
 BE/yarn-error.log*
+SESSION_NOTES.md

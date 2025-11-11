@@ -10,6 +10,11 @@ const snap = new midtransClient.Snap({
     serverKey: process.env.MIDTRANS_SERVER_KEY
 });
 
+const coreApi = new midtransClient.CoreApi({
+    isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
+    serverKey: process.env.MIDTRANS_SERVER_KEY
+});
+
 const createOrder = async (req, res) => {
     try {
         const { items, lokasiPengiriman, metodePengambilan } = req.body;
@@ -26,9 +31,8 @@ const createOrder = async (req, res) => {
             }
 
             totalHarga += menuItem.harga * item.jumlah;
-            
-            menuItem.stok -= item.jumlah;
-            await menuItem.save();
+
+            // Don't reduce stock yet - will be reduced after seller approval
 
             orderedItems.push({
                 menuItemId: menuItem._id,
@@ -73,40 +77,35 @@ const getOrders = async (req, res) => {
     }
 };
 
-const updateOrderStatus = async (req, res) => {
+// Complete order (confirmed → completed)
+const completeOrder = async (req, res) => {
     try {
-        const { newStatus } = req.body;
-        const order = await Order.findById(req.params.id).populate('userId', 'nama nomorTelepon');
+        const { id } = req.params;
+        const order = await Order.findById(id).populate('userId', 'nama email');
 
-        if (!order) return res.status(404).json({ message: 'Pesanan tidak ditemukan.' });
-
-        const validStatuses = ['pending', 'confirmed', 'canceled', 'paid', 'completed'];
-        if (!validStatuses.includes(newStatus)) {
-            return res.status(400).json({ message: 'Status tidak valid.' });
+        if (!order) {
+            return res.status(404).json({ message: 'Pesanan tidak ditemukan.' });
         }
 
-        order.status = newStatus;
+        // Only allow completion for confirmed orders
+        if (order.status !== 'confirmed') {
+            return res.status(400).json({ message: 'Hanya pesanan dengan status "confirmed" yang dapat diselesaikan.' });
+        }
+
+        // Update status to completed
+        order.status = 'completed';
         await order.save();
 
-        const user = order.userId;
-        if (user && user.email) {
-            let message = '';
-            if (newStatus === 'confirmed') {
-                message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah dikonfirmasi.`;
-            } else if (newStatus === 'paid') {
-                message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah dibayar.`;
-            } else if (newStatus === 'completed') {
-                message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah selesai. Terima kasih!`;
-            } else if (newStatus === 'canceled') {
-                message = `Halo ${user.nama}, pesanan Anda (${order._id}) telah dibatalkan. Mohon maaf atas ketidaknyamanan ini.`;
-            }
-
-            if (message) {
-                sendEmail(user.email, 'Update Status Pesanan', message);
-            }
+        // Send email notification
+        if (order.userId && order.userId.email) {
+            sendEmail(
+                order.userId.email,
+                'Pesanan Selesai',
+                `Halo ${order.userId.nama},\n\nPesanan Anda (ID: ${order._id}) telah selesai.\n\nTerima kasih telah memesan di Lala Catering!`
+            );
         }
 
-        res.json({ message: `Status pesanan diubah menjadi ${newStatus}.`, order });
+        res.json({ message: 'Pesanan berhasil diselesaikan.', order });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -149,18 +148,37 @@ const checkout = async (req, res) => {
 };
 
 const handleMidtransCallback = async (req, res) => {
-    const { transaction_status, order_id } = req.body;
-    const order = await Order.findOne({ midtransTransactionId: order_id });
-    if (!order) return res.status(404).send('Not Found');
+    try {
+        const { transaction_status, order_id } = req.body;
+        const order = await Order.findOne({ midtransTransactionId: order_id }).populate('userId', 'nama email');
 
-    if (transaction_status === 'settlement') {
-        order.status = 'selesai';
-        await order.save();
-    } else if (transaction_status === 'expire' || transaction_status === 'cancel' || transaction_status === 'deny') {
-        order.status = 'dibatalkan'; 
-        await order.save();
+        if (!order) return res.status(404).send('Not Found');
+
+        if (transaction_status === 'settlement' || transaction_status === 'capture') {
+            // Payment successful - set status to 'paid' and wait for seller approval
+            order.status = 'paid';
+            await order.save();
+
+            // Send email to customer
+            if (order.userId && order.userId.email) {
+                sendEmail(
+                    order.userId.email,
+                    'Pembayaran Berhasil',
+                    `Halo ${order.userId.nama},\n\nPembayaran untuk pesanan Anda (ID: ${order._id}) telah berhasil.\n\nPesanan Anda sedang menunggu konfirmasi dari penjual. Anda akan menerima notifikasi lebih lanjut segera.\n\nTerima kasih!`
+                );
+            }
+
+        } else if (transaction_status === 'expire' || transaction_status === 'cancel' || transaction_status === 'deny') {
+            // Payment failed or expired
+            order.status = 'canceled';
+            await order.save();
+        }
+
+        res.status(200).send('OK');
+    } catch (err) {
+        console.error('Midtrans callback error:', err);
+        res.status(500).send('Error');
     }
-    res.status(200).send('OK');
 };
 
 const generateInvoice = async (req, res) => {
@@ -254,4 +272,116 @@ const myOrders = async (req, res) => {
     }
 };
 
-module.exports = { createOrder, getOrders, updateOrderStatus, checkout, handleMidtransCallback, generateInvoice, myOrders };
+// Seller approve paid order
+const approveOrder = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const order = await Order.findById(id).populate('userId', 'nama email');
+
+        if (!order) {
+            return res.status(404).json({ message: 'Pesanan tidak ditemukan.' });
+        }
+
+        // Only allow approval for paid orders
+        if (order.status !== 'paid') {
+            return res.status(400).json({ message: 'Hanya pesanan dengan status "paid" yang dapat diapprove.' });
+        }
+
+        // Reduce stock after approval
+        for (const item of order.items) {
+            const menuItem = await MenuItem.findById(item.menuItemId);
+            if (menuItem) {
+                menuItem.stok -= item.jumlah;
+                await menuItem.save();
+            }
+        }
+
+        // Update status to confirmed
+        order.status = 'confirmed';
+        await order.save();
+
+        // Send email notification
+        if (order.userId && order.userId.email) {
+            sendEmail(
+                order.userId.email,
+                'Pesanan Dikonfirmasi',
+                `Halo ${order.userId.nama},\n\nPesanan Anda (ID: ${order._id}) telah dikonfirmasi oleh penjual dan sedang diproses.\n\nTerima kasih!`
+            );
+        }
+
+        res.json({ message: 'Pesanan berhasil diapprove.', order });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
+// Seller reject paid order with auto-refund
+const rejectOrder = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { reason } = req.body;
+        const order = await Order.findById(id).populate('userId', 'nama email');
+
+        if (!order) {
+            return res.status(404).json({ message: 'Pesanan tidak ditemukan.' });
+        }
+
+        // Only allow rejection for paid orders
+        if (order.status !== 'paid') {
+            return res.status(400).json({ message: 'Hanya pesanan dengan status "paid" yang dapat ditolak.' });
+        }
+
+        // Trigger Midtrans refund
+        if (order.midtransTransactionId) {
+            try {
+                const refundParams = {
+                    refund_key: `refund-${order._id}-${Date.now()}`,
+                    amount: order.totalHarga,
+                    reason: reason || 'Pesanan ditolak oleh penjual - kapasitas tidak mencukupi'
+                };
+
+                await coreApi.refund(order.midtransTransactionId, refundParams);
+
+            } catch (midtransErr) {
+                console.error('Midtrans refund error:', midtransErr);
+                return res.status(500).json({
+                    message: 'Gagal memproses refund ke Midtrans.',
+                    error: midtransErr.message
+                });
+            }
+        }
+
+        // Update status to canceled
+        order.status = 'canceled';
+        await order.save();
+
+        // Send email notification
+        if (order.userId && order.userId.email) {
+            sendEmail(
+                order.userId.email,
+                'Pesanan Ditolak - Refund Diproses',
+                `Halo ${order.userId.nama},\n\nMohon maaf, pesanan Anda (ID: ${order._id}) ditolak oleh penjual.\n\nAlasan: ${reason || 'Kapasitas tidak mencukupi'}\n\nUang Anda akan dikembalikan otomatis dalam 1-3 hari kerja.\n\nTerima kasih atas pengertiannya.`
+            );
+        }
+
+        res.json({
+            message: 'Pesanan ditolak dan refund telah diproses.',
+            order,
+            refundStatus: 'Processing - Dana akan dikembalikan dalam 1-3 hari kerja'
+        });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
+module.exports = {
+    createOrder,
+    getOrders,
+    checkout,
+    handleMidtransCallback,
+    generateInvoice,
+    myOrders,
+    approveOrder,
+    rejectOrder,
+    completeOrder
+};
