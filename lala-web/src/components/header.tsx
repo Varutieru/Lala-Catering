@@ -76,7 +76,7 @@ export const Header = () => {
                                 flex justify-end items-center"
                 >
                 <button
-                    onClick={() => router.push('/signin')}
+                    onClick={() => router.push('/login')}
                     className="hidden md:flex items-center justify-center px-6 lg:px-8 py-2 lg:py-3 
                                rounded-full border-2 border-[#EF6C6C] text-[#FFF1E8] 
                                text-xs sm:text-sm md:text-base lg:text-lg
