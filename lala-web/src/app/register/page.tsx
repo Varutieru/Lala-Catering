@@ -18,7 +18,6 @@ export default function RegisterPage() {
 
             if (!token) {
                 throw new Error("No token received from Google");
-                return;
             }
             const res = await axios.post(
                 "http://localhost:5000/api/auth/google-register",
@@ -34,28 +33,31 @@ export default function RegisterPage() {
     const handleGoogleFailure = () => {
         console.error("Google registration failed");
     };
+
     return (
         <>
             <Header />
             <div className="min-h-[calc(100vh-120px)] bg-white flex items-center justify-center">
-                <div className="w-[84.531vw] flex items-center ">
+                <div className="w-[84.531vw] flex items-center justify-center">
                     {/* LEFT SIDE */}
                     <div className="text-black w-1/2 flex flex-col justify-center gap-4 p-4">
-                        <h1 className="text-3xl font-bold ">
+                        <h1 className="text-5xl font-bold ">
                             Create your account
                         </h1>
-                        <p className="text-xl mb-4 w-[570px]">
+                        <p className="text-2xl mb-4 w-[560px]">
                             Nikmati kemudahan memesan menu favorit setiap minggu
                             hanya dengan sekali login.
                         </p>
 
-                        <div className=" self-center  ">
+                        {/* GOOGLE LOGIN */}
+                        <div className="self-center  w-full h-full flex items-center justify-center">
                             <GoogleLogin
                                 onSuccess={handleGoogleSuccess}
                                 onError={handleGoogleFailure}
                                 width="100%"
                                 size="large"
                                 theme="outline"
+                                text="signup_with"
                             />
                         </div>
 
@@ -72,13 +74,14 @@ export default function RegisterPage() {
                             </Link>
                         </p>
                     </div>
+
                     {/* IMAGE */}
                     <div className=" w-1/2 flex justify-center items-center">
                         <Image
                             src="/assets/register/Group 3.svg"
                             width={600}
                             height={600}
-                            alt="pic 1"
+                            alt="register pic"
                             className="h-[70vh] w-full object-contain "
                         />
                     </div>
