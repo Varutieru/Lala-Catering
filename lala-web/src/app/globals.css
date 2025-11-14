@@ -14,6 +14,7 @@
   --font-century-gothic-bold: 'Century Gothic Bold', Arial, sans-serif;
   --font-luthon-southard-script: 'Luthon Southard Script', Arial, sans-serif;
   --font-sao-torpes: 'Sao Torpes', Arial, sans-serif;
+  --font-stanger: 'Stanger', Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,6 +22,14 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+
+@font-face{
+  font-family: 'Stanger';
+  src: url(/fonts/Stanger.otf) format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
