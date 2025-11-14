@@ -20,11 +20,10 @@ export default function RegisterPage() {
                 throw new Error("No token received from Google");
             }
             const res = await axios.post(
-                "http://localhost:5000/api/auth/google-register",
+                `${process.env.NEXT_PUBLIC_API_URL}/api/users/auth/google`,
                 { token }
             );
             localStorage.setItem("token", res.data.token);
-            alert("Registration successful!");
             router.push("/");
         } catch (error) {
             console.error("Google registration error:", error);
