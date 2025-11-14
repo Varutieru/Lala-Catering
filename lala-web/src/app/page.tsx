@@ -90,11 +90,11 @@ export default function HomePage() {
                         onClick={() => scrollToSection()}
                         type="button"
                         className="relative flex items-center justify-center 
-                      px-8 py-3 
-                      rounded-full border-2 border-[#4CB8A2] 
-                      text-[#FFF1E8] font-sao-torpes
-                      overflow-hidden
-                      group">
+                                    px-8 py-3 
+                                    rounded-full border-2 border-[#4CB8A2] 
+                                    text-[#FFF1E8] font-sao-torpes
+                                    overflow-hidden
+                                    group">
                         <span
                             className="absolute inset-0 w-0 bg-[#4CB8A2] rounded-full
                                     transition-all duration-300 ease-out
