@@ -14,7 +14,9 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: function () {
+            return this.loginType === "traditional"; // hanya traditional yang wajib password
+        },
         minlength: 6,
         select: false 
     },
