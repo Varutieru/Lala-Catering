@@ -53,19 +53,28 @@ const loginUser = async (req, res) => {
 const googleLogin = async (req, res) => {
   try {
     const { token } = req.body;
+
+    console.log('🔐 Google Login attempt...');
+    console.log('📝 Token received:', token ? 'Yes' : 'No');
+    console.log('🔑 GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
+
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
+
     const { email, name } = ticket.getPayload();
-    
+    console.log('✅ Google token verified for:', email);
+
     let user = await User.findOne({ email });
-    
+
     if (user && user.loginType === 'traditional') {
+        console.log('❌ User exists with traditional login');
         return res.status(400).json({ message: 'Akun ini sudah terdaftar dengan email dan password.' });
     }
-    
+
     if (!user) {
+      console.log('📝 Creating new user...');
       user = new User({
         nama: name,
         email: email,
@@ -75,10 +84,15 @@ const googleLogin = async (req, res) => {
         alamatPengiriman: 'MUST_UPDATE_PROFILE'
       });
       await user.save();
+      console.log('✅ New user created:', user.email);
+    } else {
+      console.log('✅ Existing user found:', user.email);
     }
 
     const payload = { user: { id: user.id, role: user.role } };
     const jwtToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    console.log('✅ JWT token generated successfully');
 
     res.status(200).json({
       token: jwtToken,
@@ -91,6 +105,8 @@ const googleLogin = async (req, res) => {
       },
     });
   } catch (err) {
+    console.error('❌ Google Login Error:', err.message);
+    console.error('❌ Full error:', err);
     return res.status(401).json({ message: 'Login gagal, token tidak valid.' });
   }
 };

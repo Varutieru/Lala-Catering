@@ -13,7 +13,7 @@ const jadwalRoutes = require("./routes/jadwalRoutes");
 
 const app = express();
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "*", // Allow all origins untuk testing (ganti dengan domain spesifik di production)
   credentials: true,
 }));
 
@@ -28,7 +28,6 @@ mongoose.connect(process.env.MONGO_URI)
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/menu", menuRoutes);
-//
 app.use("/api/jadwal", jadwalRoutes);
 //app.use("/api/faq", faqRoutes);
 
