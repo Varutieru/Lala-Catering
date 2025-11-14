@@ -15,6 +15,12 @@ const navItems = [
 export const Header = () => {
     const router = useRouter();
     const pathname = usePathname();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        setIsLoggedIn(!!token);
+    }, []);
     
     const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         if (pathname === "/") {
@@ -25,6 +31,12 @@ export const Header = () => {
             });
         }
     };
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        setIsLoggedIn(false);
+        router.refresh();
+    }
 
     return (
         <>
@@ -73,21 +85,34 @@ export const Header = () => {
 
                 {/* SIGN IN BUTTON */}
                 <div className="sm:min-w-[53px] lg:min-w-[213px] min-h-[30px] sm:min-h-[30px] md:min-h-[55px] lg:min-h-[80px] relative
-                                flex justify-end items-center"
-                >
-                <button
-                    onClick={() => router.push('/login')}
-                    className="hidden md:flex items-center justify-center px-6 lg:px-8 py-2 lg:py-3 
-                               rounded-full border-2 border-[#EF6C6C] text-[#FFF1E8] 
-                               text-xs sm:text-sm md:text-base lg:text-lg
-                               hover:bg-[#EF6C6C] hover:text-white transition-all duration-300
-                               whitespace-nowrap flex-shrink-0"
-                    style={{ fontFamily: 'Century Gothic, sans-serif' }}
-                >
-                    Sign In
-                </button>
+                                    flex justify-end items-center"
+                                    >
+                    {!isLoggedIn ? (
+                        <button
+                            onClick={() => router.push('/login')}
+                            className="hidden md:flex items-center justify-center px-6 lg:px-8 py-2 lg:py-3 
+                                    rounded-full border-2 border-[#EF6C6C] text-[#FFF1E8] 
+                                    text-xs sm:text-sm md:text-base lg:text-lg
+                                    hover:bg-[#EF6C6C] hover:text-white transition-all duration-300
+                                    whitespace-nowrap flex-shrink-0"
+                            style={{ fontFamily: 'Century Gothic, sans-serif' }}
+                        >
+                            Sign In
+                        </button>
+                    ):(
+                        <button
+                            onClick={handleLogout}
+                            className="hidden md:flex items-center justify-center px-6 lg:px-8 py-2 lg:py-3 
+                                    rounded-full border-2 border-[#EF6C6C] text-[#FFF1E8] 
+                                    text-xs sm:text-sm md:text-base lg:text-lg
+                                    hover:bg-[#EF6C6C] hover:text-white transition-all duration-300
+                                    whitespace-nowrap flex-shrink-0"
+                            style={{ fontFamily: 'Century Gothic, sans-serif' }}
+                        >
+                            Logout
+                        </button>
+                    )}
                 </div>
-
             </div>
 
         </header>
