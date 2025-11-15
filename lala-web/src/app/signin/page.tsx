@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Header from "@/components/header";
+import Header from "@/components/layout/header";
 import Link from "next/link";
 import axios from "axios";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
@@ -20,10 +20,11 @@ export default function LoginPage() {
                 throw new Error("No token received from Google");
             }
             const res = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/users/auth/google`,
+                `${process.env.NEXT_PUBLIC_API_URL}/users/auth/google`,
                 { token }
             );
             localStorage.setItem("token", res.data.token);
+            localStorage.setItem("userId", JSON.stringify(res.data.user.id));
             router.push("/");
         } catch (error) {
             console.error("Google login error:", error);
