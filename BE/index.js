@@ -15,6 +15,8 @@ const app = express();
 app.use(cors({
   origin: "*", // Allow all origins untuk testing (ganti dengan domain spesifik di production)
   credentials: true,
+  allowedHeaders: ["Content-Type", "x-auth-token"],  // <-- WAJIB
+  methods: ["GET", "POST", "PUT", "DELETE"]
 }));
 
 app.use(express.json());
