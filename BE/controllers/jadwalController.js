@@ -34,76 +34,6 @@ const setMenuSchedule = async (req, res) => {
     }
 };
 
-const getScheduleByDay = async (req, res) => {
-    try {
-        // Prioritas: Cek weekly schedule dulu, kalau tidak ada fallback ke recurring
-        const { weekNumber, year } = getCurrentWeek();
-
-        // Cek apakah ada menu dengan weekly schedule untuk minggu ini
-        const menusWithWeekly = await MenuItem.find({
-            'currentWeekSchedule.weekNumber': weekNumber,
-            'currentWeekSchedule.year': year
-        });
-
-        if (menusWithWeekly.length > 0) {
-            // Ada weekly schedule, return format weekly
-            const hariList = ['senin','selasa','rabu','kamis','jumat','sabtu'];
-            const result = hariList.map(hari => {
-                const menuTersedia = [];
-
-                menusWithWeekly.forEach(menu => {
-                    const quota = menu.getQuotaForDay(hari);
-                    if (quota) {
-                        menuTersedia.push({
-                            nama: menu.nama,
-                            harga: menu.harga,
-                            quotaHarian: quota.quotaHarian,
-                            terjual: quota.terjual,
-                            available: quota.quotaHarian - quota.terjual
-                        });
-                    }
-                });
-
-                return {
-                    hari,
-                    menuTersedia,
-                    isWeeklySchedule: true
-                };
-            });
-
-            return res.status(200).json({
-                weekNumber,
-                year,
-                weekRange: formatDateRange(
-                    new Date(menusWithWeekly[0].currentWeekSchedule.weekNumber),
-                    new Date()
-                ),
-                schedule: result
-            });
-        }
-
-        // Fallback ke recurring schedule
-        const menus = await MenuItem.find({}, 'nama jadwal harga stok');
-
-        const hariList = ['senin','selasa','rabu','kamis','jumat','sabtu','minggu'];
-        const result = hariList.map(hari => ({
-            hari,
-            menuTersedia: menus
-                .filter(menu => menu.jadwal.includes(hari))
-                .map(menu => ({
-                    nama: menu.nama,
-                    harga: menu.harga,
-                    stok: menu.stok
-                })),
-            isWeeklySchedule: false
-        }));
-
-        res.status(200).json(result);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
 const getTodayMenu = async (req, res) => {
     try {
         // Dapatkan nama hari dalam format lowercase
@@ -333,7 +263,6 @@ const clearWeeklySchedule = async (req, res) => {
 module.exports = {
     // Recurring schedule (old)
     setMenuSchedule,
-    getScheduleByDay,
     getTodayMenu,
     getMenuByDay,
     // Weekly schedule (new)

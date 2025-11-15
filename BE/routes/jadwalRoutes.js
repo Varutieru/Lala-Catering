@@ -4,7 +4,6 @@ const authMiddleware = require('../middleware/auth');
 const {
     setMenuSchedule,
     getTodayMenu,
-    getScheduleByDay,
     getMenuByDay,
     setWeeklySchedule,
     getWeeklySchedule,
@@ -18,7 +17,6 @@ router.get('/mingguan', getWeeklySchedule);                                    /
 router.delete('/mingguan', authMiddleware(['penjual']), clearWeeklySchedule); // DELETE /api/jadwal/mingguan - Clear jadwal minggu ini
 
 router.get('/today', getTodayMenu);                                 // GET /api/jadwal/today - Menu hari ini (prioritize weekly schedule)
-router.get('/week', getScheduleByDay);                              // GET /api/jadwal/week - Jadwal seminggu (prioritize weekly schedule)
 router.get('/:hari', getMenuByDay);                                 // GET /api/jadwal/:hari - Menu per hari (prioritize weekly schedule)
 
 module.exports = router; 
