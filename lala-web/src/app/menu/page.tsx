@@ -100,6 +100,7 @@ const Page = () => {
                                     name={menu.name}
                                     description={menu.description}
                                     price={menu.price}
+                                    day={group.day}
                                 />
                             ))}
                         </div>
