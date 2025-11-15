@@ -1,6 +1,6 @@
 "use client";
 
-import Header from '@/components/layout/header';
+import Header from '@/components/header';
 import Search from '@/components/search';
 import DropdownFilter from '@/components/dropdownFilter';
 import CardMenu from '@/components/cardMenu';
@@ -100,6 +100,7 @@ const Page = () => {
                                     name={menu.name} 
                                     description={menu.description}
                                     price={menu.price}
+                                    day={group.day}
                                 />
                             ))}
                         </div>

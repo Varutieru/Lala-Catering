@@ -263,7 +263,7 @@ export default function HomePage() {
                             src="/assets/bg/aboutbg.svg"
                             alt="Background pattern"
                             fill
-                            className="object-cover object-none rounded-4xl brightness-65"
+                            className="object-cover rounded-4xl brightness-65"
                         />
                     </div>
 

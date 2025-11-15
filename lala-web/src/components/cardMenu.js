@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
 
 const CardMenu = ({
@@ -9,23 +10,34 @@ const CardMenu = ({
     name,
     description,
     price,
-    initialQuantity = 0
+    initialQuantity = 0,
+    day 
 }) => {
 
-    const [quantity, setQuantity] = useState(initialQuantity);
+    const { addToCart, updateQuantity, cart } = useCart();
 
-    const handleQuantityChange = (action) => {
-        switch (action) {
-            case 'increment':
-                setQuantity(prevQuantity => prevQuantity + 1);
-                break;
-            case 'decrement':
-                setQuantity(prevQuantity => prevQuantity -1);
-                break;
-            case 'add':
-                setQuantity(1);
-                break;
-        }
+    const cartItem = cart.find(item => item.id === id && item.day === day);
+    const quantity = cartItem ? cartItem.quantity : 0;
+
+    const handleAdd = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('ADD clicked for:', id, day);
+        addToCart({ id, name, price, day, imageSrc, description });
+    };
+
+    const handleIncrement = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('INCREMENT clicked for:', id, day);
+        updateQuantity(id, day, 1);
+    };
+
+    const handleDecrement = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('DECREMENT clicked for:', id, day);
+        updateQuantity(id, day, -1);
     };
 
     const formatPrice = (value) => {
@@ -56,13 +68,13 @@ const CardMenu = ({
             <span className='text-[18px] font-semibold text-[#E5713A]'>{formatPrice(price)}</span>
 
             {quantity === 0 ? (
-                <button onClick={() => handleQuantityChange('add')}
+                <button onClick={handleAdd}
                         className='h-10 w-30 bg-white rounded-[10px]  border-2 border-[#E5713A] text-[#E5713A] text-[18px] font-semibold transition-colors duration-200 hover:bg-[#FFE8D6]'>
                     Add
                 </button>
             ) : (
                 <div className='flex h-10 w-30 items-center border-2 border-[#E5713A] rounded-[10px] overflow-hidden'> 
-                    <button onClick={() => handleQuantityChange('decrement')}
+                    <button onClick={handleDecrement}
                             className='w-10 h-full flex items-center justify-center bg-white text-[#E5713A] text-[20px] font-bold border-r-2 border-[#E5713A] transition-colors duration-200 hover:bg-[#FFE8D6]'>
                         -
                     </button>
@@ -71,7 +83,7 @@ const CardMenu = ({
                         {quantity}
                     </span>
 
-                    <button onClick={() => handleQuantityChange('increment')}
+                    <button onClick={handleIncrement}
                             className='w-10 h-full flex items-center justify-center bg-white text-[#E5713A] text-[20px] font-bold border-l-2 border-[#E5713A] transition-colors duration-200 hover:bg-[#FFE8D6]'>
                         +
                     </button>
