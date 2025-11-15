@@ -265,6 +265,7 @@ const CartDrawer = () => {
                                                         fontSize: "14px",
                                                         backgroundColor:
                                                             "7F7F7F",
+                                                        color: "#002683",
                                                     }}>
                                                     {item.quantity}
                                                 </span>
