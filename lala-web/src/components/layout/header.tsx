@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { HiOutlineUserCircle } from "react-icons/hi2";
 
 const navItems = [
     { label: "HOME", href: "/"},
@@ -14,6 +15,8 @@ export const Header = () => {
     const router = useRouter();
     const pathname = usePathname();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -103,15 +106,32 @@ export const Header = () => {
                     
                     {/* SIGN IN/OUT BUTTON */}
                     {isLoggedIn ? (
-                        <button
-                            onClick={handleLogout}
-                            className="xs:px-3 xs:py-1.5 tablet:px-4 tablet:py-1.5 md:px-5 md:py-2 lg:px-5 lg:py-2 xl:px-6 xl:py-2 desk:px-6 desk:py-2
-                                      bg-black text-white rounded-full 
-                                      xs:text-xs tablet:text-base md:text-md lg:text-lg xl:text-xl
-                                      font-medium hover:bg-gray-800 transition-colors whitespace-nowrap"
-                        >
-                            Sign Out
-                        </button>
+                        <div className="relative">
+                            {/* User Icon */}
+                            <button
+                                onClick={() => setMenuOpen(!menuOpen)}
+                                className=""
+                            >
+                                <HiOutlineUserCircle className="w-14 h-14 text-[#002683] cursor-pointer hover:text-[#E5713A] transition-colors" />
+                            </button>
+                            {/* Dropdown Menu */}
+                            {menuOpen && (
+                                <div className="absolute right-0  w-44 bg-white text-black rounded-lg shadow-lg border py-2 z-50 flex flex-col ">
+                                    <button 
+                                        onClick={() => router.push("/profile")}
+                                        className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                    >
+                                        Profile
+                                    </button>
+                                    <button 
+                                        onClick={handleLogout}
+                                        className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     ) : (
                         <Link
                             href="/signin"
