@@ -11,12 +11,12 @@ export default function HomePage() {
             {/* COMPONENTS CONTAINER */}
             <div
                 className="w-full h-full 
-                         xs:mx-[30px] 
-                         tablet:mx-[60px] 
-                         md:mx-[80px] 
-                         lg:mx-[100px] 
-                         xl:mx-[130px] 
-                         desk:mx-[150px]">
+                            xs:mx-[30px] 
+                            tablet:mx-[60px] 
+                            md:mx-[80px] 
+                            lg:mx-[100px] 
+                            xl:mx-[130px] 
+                            desk:mx-[150px]">
                 {/* HEADER */}
                 <div className="w-full">
                     <Header />
