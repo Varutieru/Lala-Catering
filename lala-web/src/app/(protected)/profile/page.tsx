@@ -6,12 +6,12 @@ import { useState, useEffect } from "react";
 import Header from "@/components/layout/header";
 import { useProfile } from "@/hooks/useProfile";
 import axios from "axios";
-import { useOrders, Order, OrderItem } from "@/hooks/useOrder";
+import { useOrders, Order, OrderItem } from "@/hooks/useOrders";
 
 export default function DashboardProfilePage() {
     const router = useRouter();
     const [query, setQuery] = useState("");
-    const [activeFilter, setActiveFilter] = useState("Semua");
+    const [activeFilter, setActiveFilter] = useState("All");
     const [itemsPerPage, setItemsPerPage] = useState(5);
     const [currentPage, setCurrentPage] = useState(1);
     const [activeTab, setActiveTab] = useState<"pesanan" | "akun">("pesanan");
@@ -140,7 +140,7 @@ export default function DashboardProfilePage() {
     // filterr
     const normalizedQuery = query.trim().toLowerCase();
     const filteredByStatus = orders.filter((o: Order) => {
-        if (activeFilter === "Semua" || activeFilter === "Tanggal") return true;
+        if (activeFilter === "All" || activeFilter === "Tanggal") return true;
         return o.status.toLowerCase() === activeFilter.toLowerCase();
     });
 
@@ -280,7 +280,7 @@ export default function DashboardProfilePage() {
                                     <div className="flex flex-wrap gap-3 mb-3">
                                         {[
                                             "Tanggal",
-                                            "Semua",
+                                            "All",
                                             "Pending",
                                             "Paid",
                                             "Confirmed",
@@ -440,7 +440,7 @@ export default function DashboardProfilePage() {
                                                 dengan pencarian.
                                             </div>
                                         ) : (
-                                            paginatedOrders.map((o) => (
+                                            paginatedOrders.map((o: Order) => (
                                                 <article
                                                     key={o._id}
                                                     className="bg-white shadow rounded-xl border border-slate-100">
