@@ -118,7 +118,7 @@ const CartDrawer = () => {
                                 {groupedCart[day].map((item) => (
                                     <div 
                                         key={item.id + item.day} 
-                                        style={{ paddingBottom: '6px', marginBottom: '6px', borderBottom: '1px dashed #9D9D9D'}}
+                                        style={{ paddingBottom: '10px', marginBottom: '10px', borderBottom: '1px dashed #9D9D9D'}}
                                     >
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <div style={{ flex: 1, paddingRight: '16px' }}>
@@ -161,7 +161,7 @@ const CartDrawer = () => {
                         <span>Total</span>
                         <span>{formatPrice(totalAmount)}</span>
                     </div>
-                    <Link href="/konfirmasi-pesanan">
+                    <Link href="/order">
                         <button
                             onClick={() => setIsOpen(false)}
                             disabled={cart.length === 0}
